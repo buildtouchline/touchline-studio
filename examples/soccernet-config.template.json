@@ -1,0 +1,21 @@
+{
+  "release_id": "REPLACE-soccernet-person-v1",
+  "dataset_version": "1",
+  "reviewer_id": "REPLACE-reviewer",
+  "annotations_reviewed": false,
+  "person_labels_complete": false,
+  "training_eligible": false,
+  "sequences": [{
+    "id": "REPLACE-sequence-id",
+    "capture_group_id": "REPLACE-actual-match-or-capture-id",
+    "split": "train",
+    "images_root": "REPLACE-sequence/img1",
+    "annotations": "REPLACE-sequence/gt/gt.txt",
+    "image_pattern": "{frame:06d}.jpg",
+    "frame_stride": 12,
+    "bbox_origin": null,
+    "track_classes": {},
+    "person_track_classes": ["REPLACE-with-inspected-person-class-names"],
+    "ignored_track_classes": ["REPLACE-with-inspected-ball-class-name-if-present"]
+  }]
+}

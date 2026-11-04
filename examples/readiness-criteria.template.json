@@ -1,0 +1,253 @@
+{
+  "schema_version": "touchline.readiness.v1",
+  "groups": {
+    "level1_identity_visibility": {
+      "implemented": false,
+      "tested": false,
+      "implementation_ref": null,
+      "test_ref": null,
+      "reference": {
+        "method": "Independent frame and interval labels for target visibility, identity uncertainty and gaps",
+        "evidence_ref": null
+      },
+      "criterion": {
+        "status": "proposed",
+        "frozen_at": null,
+        "approved_by": null,
+        "metrics": {
+          "usable_coverage": {
+            "operator": "min",
+            "threshold": 0.9,
+            "unit": "fraction_of_labelled_visible_time"
+          }
+        },
+        "evaluation_set": {
+          "id": null,
+          "source_hash": null,
+          "labels_hash": null,
+          "capture_group_ids": [],
+          "split_role": null
+        }
+      },
+      "outcome": null,
+      "limitations": [
+        "Proposed threshold; A/B/coach review and held-out evaluation pending"
+      ]
+    },
+    "level1_spatial_review": {
+      "implemented": false,
+      "tested": false,
+      "implementation_ref": null,
+      "test_ref": null,
+      "reference": {
+        "method": "Independent bottom-centre image-pixel marks on a held-out fixed-camera drill",
+        "evidence_ref": null
+      },
+      "criterion": {
+        "status": "proposed",
+        "frozen_at": null,
+        "approved_by": null,
+        "metrics": {
+          "position_error_p90": {
+            "operator": "max",
+            "threshold": 0.05,
+            "unit": "fraction_of_frame_diagonal"
+          }
+        },
+        "evaluation_set": {
+          "id": null,
+          "source_hash": null,
+          "labels_hash": null,
+          "capture_group_ids": [],
+          "split_role": null
+        }
+      },
+      "outcome": null,
+      "limitations": [
+        "Proposed threshold; A/B/coach review and held-out evaluation pending"
+      ]
+    },
+    "level1_attempt_review": {
+      "implemented": false,
+      "tested": false,
+      "implementation_ref": null,
+      "test_ref": null,
+      "reference": {
+        "method": "Coach-reviewed attempt ledger compared with source clips and interval labels",
+        "evidence_ref": null
+      },
+      "criterion": {
+        "status": "proposed",
+        "frozen_at": null,
+        "approved_by": null,
+        "metrics": {
+          "evidence_link_rate": {
+            "operator": "min",
+            "threshold": 1.0,
+            "unit": "fraction_of_reviewed_attempts"
+          }
+        },
+        "evaluation_set": {
+          "id": null,
+          "source_hash": null,
+          "labels_hash": null,
+          "capture_group_ids": [],
+          "split_role": null
+        }
+      },
+      "outcome": null,
+      "limitations": [
+        "Proposed threshold; A/B/coach review and held-out evaluation pending"
+      ]
+    },
+    "level2_distance": {
+      "implemented": false,
+      "tested": false,
+      "implementation_ref": null,
+      "test_ref": null,
+      "reference": {
+        "method": "Surveyed course length with synchronized video and confirmed identity/calibration",
+        "evidence_ref": null
+      },
+      "criterion": {
+        "status": "proposed",
+        "frozen_at": null,
+        "approved_by": null,
+        "metrics": {
+          "distance_error": {
+            "operator": "max",
+            "threshold": 0.1,
+            "unit": "relative_absolute_error"
+          }
+        },
+        "evaluation_set": {
+          "id": null,
+          "source_hash": null,
+          "labels_hash": null,
+          "capture_group_ids": [],
+          "split_role": null
+        }
+      },
+      "outcome": null,
+      "limitations": [
+        "Proposed threshold; A/B/coach review and held-out evaluation pending"
+      ]
+    },
+    "level2_speed": {
+      "implemented": false,
+      "tested": false,
+      "implementation_ref": null,
+      "test_ref": null,
+      "reference": {
+        "method": "Independent synchronized timing/course reference for average and windowed maximum speed",
+        "evidence_ref": null
+      },
+      "criterion": {
+        "status": "proposed",
+        "frozen_at": null,
+        "approved_by": null,
+        "metrics": {
+          "average_speed_error": {
+            "operator": "max",
+            "threshold": 0.15,
+            "unit": "relative_absolute_error"
+          },
+          "windowed_max_speed_error": {
+            "operator": "max",
+            "threshold": 0.15,
+            "unit": "relative_absolute_error"
+          }
+        },
+        "evaluation_set": {
+          "id": null,
+          "source_hash": null,
+          "labels_hash": null,
+          "capture_group_ids": [],
+          "split_role": null
+        }
+      },
+      "outcome": null,
+      "limitations": [
+        "Proposed threshold; A/B/coach review and held-out evaluation pending"
+      ]
+    },
+    "level2_intensity_zones": {
+      "implemented": false,
+      "tested": false,
+      "implementation_ref": null,
+      "test_ref": null,
+      "reference": {
+        "method": "Independent synchronized timing/course reference for time in each declared speed band",
+        "evidence_ref": null
+      },
+      "criterion": {
+        "status": "proposed",
+        "frozen_at": null,
+        "approved_by": null,
+        "metrics": {
+          "zone_time_error": {
+            "operator": "max",
+            "threshold": 2.0,
+            "unit": "seconds_per_30_second_drill"
+          }
+        },
+        "evaluation_set": {
+          "id": null,
+          "source_hash": null,
+          "labels_hash": null,
+          "capture_group_ids": [],
+          "split_role": null
+        }
+      },
+      "outcome": null,
+      "limitations": [
+        "Proposed threshold; A/B/coach review and held-out evaluation pending"
+      ]
+    },
+    "level2_activity": {
+      "implemented": false,
+      "tested": false,
+      "implementation_ref": null,
+      "test_ref": null,
+      "reference": {
+        "method": "Independent blinded activity interval labels on held-out footage",
+        "evidence_ref": null
+      },
+      "criterion": {
+        "status": "proposed",
+        "frozen_at": null,
+        "approved_by": null,
+        "metrics": {
+          "macro_f1": {
+            "operator": "min",
+            "threshold": 0.8,
+            "unit": "fraction"
+          }
+        },
+        "evaluation_set": {
+          "id": null,
+          "source_hash": null,
+          "labels_hash": null,
+          "capture_group_ids": [],
+          "split_role": null
+        }
+      },
+      "outcome": null,
+      "limitations": [
+        "Proposed threshold; A/B/coach review and held-out evaluation pending"
+      ]
+    }
+  },
+  "resource_budget": {
+    "status": "proposed",
+    "frozen_at": null,
+    "approved_by": null,
+    "limits": {
+      "total_wall_s": null,
+      "peak_ram_bytes": null,
+      "peak_vram_bytes": null,
+      "disk_bytes": null
+    },
+    "outcome": null
+  }
+}

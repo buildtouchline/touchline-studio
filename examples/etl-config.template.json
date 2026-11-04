@@ -1,0 +1,13 @@
+{
+  "release_id": "REPLACE-person-release-v1",
+  "dataset_version": "1",
+  "reviewer_id": "REPLACE-reviewer",
+  "annotations_reviewed": false,
+  "person_labels_complete": false,
+  "training_eligible": false,
+  "fixture_only": false,
+  "class_aliases": {"person": 1},
+  "ignored_classes": [],
+  "capture_groups": {},
+  "inputs": [{"id": "source-a", "format": "yolo_boxes", "images_root": "images", "labels_root": "labels", "classes": ["REPLACE-with-actual-source-classes-in-order"]}]
+}

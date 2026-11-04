@@ -1,0 +1,13 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Touchline fixture preview</title><link rel="icon" type="image/png" href="/web/vikzar-icon.png"></head><body><p>Loading deterministic frontend fixture…</p><script>
+const params=new URLSearchParams(location.search);
+const scenario=params.get('scenario')||'normal';
+const view=params.get('view')||'library';
+fetch('/index.html?qa-source=1').then(r=>r.text()).then(html=>{
+  const injection=`<script>window.__qaScenario=${JSON.stringify(scenario).replaceAll('<','\\u003c')};<\/script><script src="/web/qa/mock.js"><\/script>`;
+  const appTag='<script src="/app.js"></scr'+'ipt>';
+  let page=html.replace(appTag,`${injection}${appTag}`);
+  if(view==='workspace')page=page.replace('</body>',`<script>const qaOpen=setInterval(()=>{const row=document.querySelector('.library-row');if(row){clearInterval(qaOpen);row.click();}},25);<\/script></body>`);
+  if(view==='overview')page=page.replace('</body>',`<script>document.getElementById('navOverview').click();<\/script></body>`);
+  document.open();document.write(page);document.close();
+});
+</script></body></html>

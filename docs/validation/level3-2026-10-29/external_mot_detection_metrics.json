@@ -1,0 +1,502 @@
+{
+  "schema": "touchline.level3.external_mot_detection_metrics.v1",
+  "status": "preliminary_external_gt_alignment_review_pending",
+  "scope": "22 on-field players/goalkeepers per frame; excludes referees and other humans",
+  "mot_file_sha256": "425c9fa97e14f50298150f366828854639cfa52529470bd6ed95b8ac278dd2e7",
+  "source_video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+  "iou_threshold": 0.5,
+  "matching": "maximum-cardinality one-to-one IoU>=0.50",
+  "caveat": "MOT GT covers 22 on-field players/GKs, not referees or other visible humans. Unmatched detector boxes can be correct non-player people. Precision here is only precision relative to that 22-person target scope; do not present it as all-person detector precision.",
+  "frame_ids": [
+    "118577-000000",
+    "118577-000500",
+    "118577-001000",
+    "118577-001500",
+    "118577-002000",
+    "118577-002500",
+    "118577-003000",
+    "118577-003500",
+    "118577-004000",
+    "118577-004500",
+    "118577-005000",
+    "118577-005500"
+  ],
+  "default": {
+    "summary": {
+      "frames": 12,
+      "tp": 16,
+      "fp": 30,
+      "fn": 248,
+      "precision": 0.34782608695652173,
+      "recall": 0.06060606060606061,
+      "f1": 0.1032258064516129,
+      "mean_matched_iou": 0.6755115956645484,
+      "mean_iou_denominator_matches": 16,
+      "ignored_predictions": 0
+    },
+    "per_frame": [
+      {
+        "frame_id": "118577-000000",
+        "tp": 3,
+        "fp": 5,
+        "fn": 19,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 8,
+        "matched_ious": [
+          0.80958700268868,
+          0.6040285714271082,
+          0.5801773676021159
+        ]
+      },
+      {
+        "frame_id": "118577-000500",
+        "tp": 1,
+        "fp": 5,
+        "fn": 21,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 6,
+        "matched_ious": [
+          0.55972768534933
+        ]
+      },
+      {
+        "frame_id": "118577-001000",
+        "tp": 2,
+        "fp": 4,
+        "fn": 20,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 6,
+        "matched_ious": [
+          0.7332680834156899,
+          0.6208313531688954
+        ]
+      },
+      {
+        "frame_id": "118577-001500",
+        "tp": 2,
+        "fp": 1,
+        "fn": 20,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 3,
+        "matched_ious": [
+          0.6346519337671741,
+          0.5566310470372432
+        ]
+      },
+      {
+        "frame_id": "118577-002000",
+        "tp": 1,
+        "fp": 3,
+        "fn": 21,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 4,
+        "matched_ious": [
+          0.7779988682053322
+        ]
+      },
+      {
+        "frame_id": "118577-002500",
+        "tp": 2,
+        "fp": 1,
+        "fn": 20,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 3,
+        "matched_ious": [
+          0.6441505593660408,
+          0.7720946560272952
+        ]
+      },
+      {
+        "frame_id": "118577-003000",
+        "tp": 1,
+        "fp": 2,
+        "fn": 21,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 3,
+        "matched_ious": [
+          0.7090538047284333
+        ]
+      },
+      {
+        "frame_id": "118577-003500",
+        "tp": 2,
+        "fp": 5,
+        "fn": 20,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 7,
+        "matched_ious": [
+          0.8033777072230287,
+          0.7782952685232892
+        ]
+      },
+      {
+        "frame_id": "118577-004000",
+        "tp": 0,
+        "fp": 3,
+        "fn": 22,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 3,
+        "matched_ious": []
+      },
+      {
+        "frame_id": "118577-004500",
+        "tp": 1,
+        "fp": 1,
+        "fn": 21,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 2,
+        "matched_ious": [
+          0.5330206669426204
+        ]
+      },
+      {
+        "frame_id": "118577-005000",
+        "tp": 0,
+        "fp": 0,
+        "fn": 22,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 0,
+        "matched_ious": []
+      },
+      {
+        "frame_id": "118577-005500",
+        "tp": 1,
+        "fp": 0,
+        "fn": 21,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 1,
+        "matched_ious": [
+          0.6912909551604979
+        ]
+      }
+    ],
+    "configuration": {
+      "architecture": "fasterrcnn_mobilenet_v3_large_320_fpn",
+      "weights": "FasterRCNN_MobileNet_V3_Large_320_FPN_Weights.COCO_V1",
+      "checkpoint_sha256": "907ea3f91ff92242bc1baea8049276a3e76bca48ce7560bd268cc029f37977b5",
+      "min_size": 640,
+      "max_size": 1280,
+      "threshold": 0.5,
+      "device": "cpu",
+      "runtime": "torch2.15.0/torchvision0.29.2",
+      "postprocessing": "Torchvision model NMS followed by person-only filter, source clipping, score>=0.5"
+    },
+    "exploratory_gt_box_height_bins": {
+      "under_50_px": {
+        "gt": 138,
+        "matched": 0,
+        "recall": 0.0
+      },
+      "50_to_99_px": {
+        "gt": 115,
+        "matched": 8,
+        "recall": 0.06956521739130435
+      },
+      "100_px_or_more": {
+        "gt": 11,
+        "matched": 8,
+        "recall": 0.7272727272727273
+      }
+    }
+  },
+  "higher_resolution": {
+    "summary": {
+      "frames": 12,
+      "tp": 112,
+      "fp": 75,
+      "fn": 152,
+      "precision": 0.5989304812834224,
+      "recall": 0.42424242424242425,
+      "f1": 0.4966740576496674,
+      "mean_matched_iou": 0.7126027528016217,
+      "mean_iou_denominator_matches": 112,
+      "ignored_predictions": 0
+    },
+    "per_frame": [
+      {
+        "frame_id": "118577-000000",
+        "tp": 11,
+        "fp": 5,
+        "fn": 11,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 16,
+        "matched_ious": [
+          0.7741117080388679,
+          0.8041618897928592,
+          0.5747368188427274,
+          0.8583628285899185,
+          0.8333608196655417,
+          0.8923432158282529,
+          0.6274342900552144,
+          0.8161454019287132,
+          0.8491883140618993,
+          0.5745552818774976,
+          0.8222706986331678
+        ]
+      },
+      {
+        "frame_id": "118577-000500",
+        "tp": 10,
+        "fp": 4,
+        "fn": 12,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 14,
+        "matched_ious": [
+          0.5263181492330192,
+          0.7304455027233111,
+          0.6154907548313457,
+          0.6589930198100142,
+          0.7274737236278518,
+          0.7568601760054647,
+          0.8823885155822824,
+          0.8627068328503599,
+          0.8469512691870135,
+          0.7957581731542851
+        ]
+      },
+      {
+        "frame_id": "118577-001000",
+        "tp": 17,
+        "fp": 6,
+        "fn": 5,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 23,
+        "matched_ious": [
+          0.7102334257914207,
+          0.598521122482937,
+          0.8149969508687416,
+          0.5094924747221988,
+          0.5118811442655355,
+          0.6900557150982194,
+          0.6671102747252861,
+          0.8276680087161048,
+          0.7570202004507695,
+          0.7410139415240148,
+          0.6016546442105237,
+          0.8167876879115727,
+          0.771794777051193,
+          0.6584651787400192,
+          0.7421166257364256,
+          0.763059356302078,
+          0.7146262653033483
+        ]
+      },
+      {
+        "frame_id": "118577-001500",
+        "tp": 8,
+        "fp": 4,
+        "fn": 14,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 12,
+        "matched_ious": [
+          0.6837509851620446,
+          0.6437867246209654,
+          0.8222433431748533,
+          0.7389451824662047,
+          0.7729444525375685,
+          0.60530292643059,
+          0.6893303041634439,
+          0.7033206963879104
+        ]
+      },
+      {
+        "frame_id": "118577-002000",
+        "tp": 8,
+        "fp": 6,
+        "fn": 14,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 14,
+        "matched_ious": [
+          0.8011760823209874,
+          0.7784128148868761,
+          0.6769254914820706,
+          0.6879358132736985,
+          0.6866348404000742,
+          0.5592585330261164,
+          0.559913312280038,
+          0.7644013735058709
+        ]
+      },
+      {
+        "frame_id": "118577-002500",
+        "tp": 7,
+        "fp": 7,
+        "fn": 15,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 14,
+        "matched_ious": [
+          0.7532678111153208,
+          0.8493352196957591,
+          0.8572527278185162,
+          0.7021811723754372,
+          0.6751791761110554,
+          0.7264710740310779,
+          0.6630735693463911
+        ]
+      },
+      {
+        "frame_id": "118577-003000",
+        "tp": 7,
+        "fp": 4,
+        "fn": 15,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 11,
+        "matched_ious": [
+          0.8737200195178777,
+          0.7486014790324251,
+          0.7278081033114429,
+          0.622728488143533,
+          0.5363036925785567,
+          0.7049734233009844,
+          0.6917500922993042
+        ]
+      },
+      {
+        "frame_id": "118577-003500",
+        "tp": 12,
+        "fp": 5,
+        "fn": 10,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 17,
+        "matched_ious": [
+          0.8532165658460058,
+          0.7970399233277263,
+          0.5773270612303437,
+          0.5962656991080456,
+          0.8669000014501488,
+          0.6842896906935301,
+          0.8451294393404447,
+          0.9180784079657578,
+          0.5657878842036096,
+          0.8979968545063476,
+          0.7891957611223317,
+          0.528970395195186
+        ]
+      },
+      {
+        "frame_id": "118577-004000",
+        "tp": 7,
+        "fp": 11,
+        "fn": 15,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 18,
+        "matched_ious": [
+          0.698881356996382,
+          0.7535685283091758,
+          0.529811592938623,
+          0.7558297121412223,
+          0.6571033790369384,
+          0.7419328605037557,
+          0.7331688474364106
+        ]
+      },
+      {
+        "frame_id": "118577-004500",
+        "tp": 10,
+        "fp": 7,
+        "fn": 12,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 17,
+        "matched_ious": [
+          0.7490414202706457,
+          0.8170801247891583,
+          0.6072509729926566,
+          0.5386387480980765,
+          0.8573312775237247,
+          0.7187736858959006,
+          0.6671370253742193,
+          0.8635605156260823,
+          0.5103014968843327,
+          0.7452320975511386
+        ]
+      },
+      {
+        "frame_id": "118577-005000",
+        "tp": 5,
+        "fp": 8,
+        "fn": 17,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 13,
+        "matched_ious": [
+          0.7501673785030902,
+          0.5496018414776027,
+          0.5889778988704997,
+          0.7033662021753211,
+          0.7281679453506152
+        ]
+      },
+      {
+        "frame_id": "118577-005500",
+        "tp": 10,
+        "fp": 8,
+        "fn": 12,
+        "ignored_predictions": 0,
+        "gt_count": 22,
+        "prediction_count": 18,
+        "matched_ious": [
+          0.8412074971848422,
+          0.5565681244382336,
+          0.6327541976986597,
+          0.5268155041368322,
+          0.6913125096097255,
+          0.8754213599421138,
+          0.8601474644298612,
+          0.5285735257895235,
+          0.5210835264743203,
+          0.5590179083254748
+        ]
+      }
+    ],
+    "configuration": {
+      "architecture": "fasterrcnn_mobilenet_v3_large_320_fpn",
+      "weights": "FasterRCNN_MobileNet_V3_Large_320_FPN_Weights.COCO_V1",
+      "checkpoint_sha256": "907ea3f91ff92242bc1baea8049276a3e76bca48ce7560bd268cc029f37977b5",
+      "min_size": 640,
+      "max_size": 2560,
+      "threshold": 0.5,
+      "device": "cpu",
+      "runtime": "torch2.15.0/torchvision0.29.2",
+      "postprocessing": "Torchvision model NMS followed by person-only filter, source clipping, score>=0.5"
+    },
+    "exploratory_gt_box_height_bins": {
+      "under_50_px": {
+        "gt": 138,
+        "matched": 28,
+        "recall": 0.2028985507246377
+      },
+      "50_to_99_px": {
+        "gt": 115,
+        "matched": 73,
+        "recall": 0.6347826086956522
+      },
+      "100_px_or_more": {
+        "gt": 11,
+        "matched": 11,
+        "recall": 1.0
+      }
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "schema": "touchline.level3.annotation_batch.v1",
+  "status": "awaiting_human_annotation",
+  "policy": "First five distinct frozen frames across both source videos and panoramic temporal windows; selected by time/scene coverage, without reference to detector outcomes. A reviewed empty frame requires explicit confirmation. Do not change the 24-frame frozen manifest.",
+  "frame_ids": [
+    "118577-000000",
+    "118577-003500",
+    "panorama-000125",
+    "panorama-034575",
+    "panorama-067650"
+  ],
+  "frames": [
+    {
+      "frame_id": "118577-000000",
+      "video": "118577.mp4",
+      "source_frame_index": 0,
+      "timestamp_s": 0.0,
+      "image_path": "frames/118577-000000.png",
+      "image_sha256": "6227f0e7c24a749c8b1769b2224e1256a39553b0dc44c0bd22a6df69d561354f"
+    },
+    {
+      "frame_id": "118577-003500",
+      "video": "118577.mp4",
+      "source_frame_index": 3500,
+      "timestamp_s": 140.0,
+      "image_path": "frames/118577-003500.png",
+      "image_sha256": "1aa329975c59ac51ddaab109a026adab5f7853d50b947da8bfa5a734d79d7924"
+    },
+    {
+      "frame_id": "panorama-000125",
+      "video": "132877_panorama_2nd_half.mp4",
+      "source_frame_index": 125,
+      "timestamp_s": 5.0,
+      "image_path": "frames/panorama-000125.png",
+      "image_sha256": "c24de583c0de7cd3108a7d91e9b404875723088204a0d734018ec8e19d72e577"
+    },
+    {
+      "frame_id": "panorama-034575",
+      "video": "132877_panorama_2nd_half.mp4",
+      "source_frame_index": 34575,
+      "timestamp_s": 1383.0,
+      "image_path": "frames/panorama-034575.png",
+      "image_sha256": "26ca0d1003d319db40f02629f529700c3a22da45531d54b02a858e6928ba83f3"
+    },
+    {
+      "frame_id": "panorama-067650",
+      "video": "132877_panorama_2nd_half.mp4",
+      "source_frame_index": 67650,
+      "timestamp_s": 2706.0,
+      "image_path": "frames/panorama-067650.png",
+      "image_sha256": "65ab77157e94cb27863190d1ca88f79e8fe3c54cd14891c34ed35de1632e8250"
+    }
+  ]
+}

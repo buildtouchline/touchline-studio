@@ -1,0 +1,459 @@
+{
+  "schema": "touchline.level3.external_mot_tracking_diagnostic.v1",
+  "status": "preliminary_external_gt_alignment_review_pending",
+  "scope": "first 30 saved sampled frames, 0-5 s; 22 MOT player/GK targets/frame; IoU>=0.50",
+  "source_video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+  "mot_file_sha256": "425c9fa97e14f50298150f366828854639cfa52529470bd6ed95b8ac278dd2e7",
+  "observations_sha256": "382b5fd272c319403d120586e156685b8287f59b3cc7a7212676021cae4b2c5e",
+  "matching": "per-frame maximum-cardinality one-to-one IoU>=0.50",
+  "definition": "Adjacent switch means a MOT identity matched in two consecutive sampled frames to different Touchline local IDs. Gap-changed IDs are separate because a miss occurred between matched samples. These are bounded diagnostics, not IDF1/HOTA or a full-video accuracy estimate.",
+  "samples": 30,
+  "gt_boxes": 660,
+  "saved_observations": 191,
+  "matched_boxes": 65,
+  "matched_gt_identity_count": 10,
+  "adjacent_switch_count": 6,
+  "gap_changed_id_count": 5,
+  "adjacent_switches": [
+    {
+      "mot_track_id": 9,
+      "previous": {
+        "sample_position": 7,
+        "source_frame_index": 30,
+        "local_track_id": 7,
+        "iou": 0.7176441030794195
+      },
+      "current": {
+        "sample_position": 8,
+        "source_frame_index": 34,
+        "local_track_id": 17,
+        "iou": 0.6752381397116892
+      }
+    },
+    {
+      "mot_track_id": 9,
+      "previous": {
+        "sample_position": 11,
+        "source_frame_index": 46,
+        "local_track_id": 17,
+        "iou": 0.7009900074892856
+      },
+      "current": {
+        "sample_position": 12,
+        "source_frame_index": 50,
+        "local_track_id": 19,
+        "iou": 0.6239771887078869
+      }
+    },
+    {
+      "mot_track_id": 9,
+      "previous": {
+        "sample_position": 12,
+        "source_frame_index": 50,
+        "local_track_id": 19,
+        "iou": 0.6239771887078869
+      },
+      "current": {
+        "sample_position": 13,
+        "source_frame_index": 55,
+        "local_track_id": 21,
+        "iou": 0.6180289556854466
+      }
+    },
+    {
+      "mot_track_id": 9,
+      "previous": {
+        "sample_position": 23,
+        "source_frame_index": 96,
+        "local_track_id": 28,
+        "iou": 0.5300230100324521
+      },
+      "current": {
+        "sample_position": 24,
+        "source_frame_index": 100,
+        "local_track_id": 30,
+        "iou": 0.8222450963274772
+      }
+    },
+    {
+      "mot_track_id": 10,
+      "previous": {
+        "sample_position": 2,
+        "source_frame_index": 9,
+        "local_track_id": 3,
+        "iou": 0.6643111094450387
+      },
+      "current": {
+        "sample_position": 3,
+        "source_frame_index": 13,
+        "local_track_id": 10,
+        "iou": 0.7509950324877462
+      }
+    },
+    {
+      "mot_track_id": 19,
+      "previous": {
+        "sample_position": 28,
+        "source_frame_index": 117,
+        "local_track_id": 34,
+        "iou": 0.6498322768013184
+      },
+      "current": {
+        "sample_position": 29,
+        "source_frame_index": 121,
+        "local_track_id": 36,
+        "iou": 0.5325728551787003
+      }
+    }
+  ],
+  "gap_changed_ids": [
+    {
+      "mot_track_id": 1,
+      "previous": {
+        "sample_position": 11,
+        "source_frame_index": 46,
+        "local_track_id": 12,
+        "iou": 0.5360254411853507
+      },
+      "current": {
+        "sample_position": 17,
+        "source_frame_index": 71,
+        "local_track_id": 23,
+        "iou": 0.6342391061729933
+      }
+    },
+    {
+      "mot_track_id": 9,
+      "previous": {
+        "sample_position": 16,
+        "source_frame_index": 67,
+        "local_track_id": 21,
+        "iou": 0.5404146825191621
+      },
+      "current": {
+        "sample_position": 23,
+        "source_frame_index": 96,
+        "local_track_id": 28,
+        "iou": 0.5300230100324521
+      }
+    },
+    {
+      "mot_track_id": 11,
+      "previous": {
+        "sample_position": 0,
+        "source_frame_index": 0,
+        "local_track_id": 5,
+        "iou": 0.5801773676021159
+      },
+      "current": {
+        "sample_position": 5,
+        "source_frame_index": 21,
+        "local_track_id": 15,
+        "iou": 0.7393109952140968
+      }
+    },
+    {
+      "mot_track_id": 11,
+      "previous": {
+        "sample_position": 10,
+        "source_frame_index": 42,
+        "local_track_id": 15,
+        "iou": 0.6380066459872316
+      },
+      "current": {
+        "sample_position": 12,
+        "source_frame_index": 50,
+        "local_track_id": 14,
+        "iou": 0.5795766690960144
+      }
+    },
+    {
+      "mot_track_id": 17,
+      "previous": {
+        "sample_position": 1,
+        "source_frame_index": 5,
+        "local_track_id": 9,
+        "iou": 0.654785416022808
+      },
+      "current": {
+        "sample_position": 12,
+        "source_frame_index": 50,
+        "local_track_id": 18,
+        "iou": 0.582346782346065
+      }
+    }
+  ],
+  "per_frame": [
+    {
+      "source_frame_index": 0,
+      "timestamp_s": 0.0,
+      "gt_player_gk_count": 22,
+      "observation_count": 8,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 5
+    },
+    {
+      "source_frame_index": 5,
+      "timestamp_s": 0.2,
+      "gt_player_gk_count": 22,
+      "observation_count": 8,
+      "matched_count": 4,
+      "unmatched_gt_count": 18,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 9,
+      "timestamp_s": 0.36,
+      "gt_player_gk_count": 22,
+      "observation_count": 7,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 5
+    },
+    {
+      "source_frame_index": 13,
+      "timestamp_s": 0.52,
+      "gt_player_gk_count": 22,
+      "observation_count": 6,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 17,
+      "timestamp_s": 0.68,
+      "gt_player_gk_count": 22,
+      "observation_count": 6,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 3
+    },
+    {
+      "source_frame_index": 21,
+      "timestamp_s": 0.84,
+      "gt_player_gk_count": 22,
+      "observation_count": 10,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 7
+    },
+    {
+      "source_frame_index": 25,
+      "timestamp_s": 1.0,
+      "gt_player_gk_count": 22,
+      "observation_count": 7,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 30,
+      "timestamp_s": 1.2,
+      "gt_player_gk_count": 22,
+      "observation_count": 5,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 2
+    },
+    {
+      "source_frame_index": 34,
+      "timestamp_s": 1.36,
+      "gt_player_gk_count": 22,
+      "observation_count": 6,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 38,
+      "timestamp_s": 1.52,
+      "gt_player_gk_count": 22,
+      "observation_count": 7,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 5
+    },
+    {
+      "source_frame_index": 42,
+      "timestamp_s": 1.68,
+      "gt_player_gk_count": 22,
+      "observation_count": 5,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 2
+    },
+    {
+      "source_frame_index": 46,
+      "timestamp_s": 1.84,
+      "gt_player_gk_count": 22,
+      "observation_count": 4,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 2
+    },
+    {
+      "source_frame_index": 50,
+      "timestamp_s": 2.0,
+      "gt_player_gk_count": 22,
+      "observation_count": 6,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 3
+    },
+    {
+      "source_frame_index": 55,
+      "timestamp_s": 2.2,
+      "gt_player_gk_count": 22,
+      "observation_count": 6,
+      "matched_count": 1,
+      "unmatched_gt_count": 21,
+      "unmatched_observation_count": 5
+    },
+    {
+      "source_frame_index": 59,
+      "timestamp_s": 2.36,
+      "gt_player_gk_count": 22,
+      "observation_count": 6,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 63,
+      "timestamp_s": 2.52,
+      "gt_player_gk_count": 22,
+      "observation_count": 5,
+      "matched_count": 1,
+      "unmatched_gt_count": 21,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 67,
+      "timestamp_s": 2.68,
+      "gt_player_gk_count": 22,
+      "observation_count": 5,
+      "matched_count": 1,
+      "unmatched_gt_count": 21,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 71,
+      "timestamp_s": 2.84,
+      "gt_player_gk_count": 22,
+      "observation_count": 8,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 6
+    },
+    {
+      "source_frame_index": 75,
+      "timestamp_s": 3.0,
+      "gt_player_gk_count": 22,
+      "observation_count": 5,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 3
+    },
+    {
+      "source_frame_index": 80,
+      "timestamp_s": 3.2,
+      "gt_player_gk_count": 22,
+      "observation_count": 6,
+      "matched_count": 1,
+      "unmatched_gt_count": 21,
+      "unmatched_observation_count": 5
+    },
+    {
+      "source_frame_index": 84,
+      "timestamp_s": 3.36,
+      "gt_player_gk_count": 22,
+      "observation_count": 4,
+      "matched_count": 1,
+      "unmatched_gt_count": 21,
+      "unmatched_observation_count": 3
+    },
+    {
+      "source_frame_index": 88,
+      "timestamp_s": 3.52,
+      "gt_player_gk_count": 22,
+      "observation_count": 3,
+      "matched_count": 0,
+      "unmatched_gt_count": 22,
+      "unmatched_observation_count": 3
+    },
+    {
+      "source_frame_index": 92,
+      "timestamp_s": 3.68,
+      "gt_player_gk_count": 22,
+      "observation_count": 4,
+      "matched_count": 1,
+      "unmatched_gt_count": 21,
+      "unmatched_observation_count": 3
+    },
+    {
+      "source_frame_index": 96,
+      "timestamp_s": 3.84,
+      "gt_player_gk_count": 22,
+      "observation_count": 7,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 100,
+      "timestamp_s": 4.0,
+      "gt_player_gk_count": 22,
+      "observation_count": 9,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 6
+    },
+    {
+      "source_frame_index": 105,
+      "timestamp_s": 4.2,
+      "gt_player_gk_count": 22,
+      "observation_count": 8,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 5
+    },
+    {
+      "source_frame_index": 109,
+      "timestamp_s": 4.36,
+      "gt_player_gk_count": 22,
+      "observation_count": 7,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 4
+    },
+    {
+      "source_frame_index": 113,
+      "timestamp_s": 4.52,
+      "gt_player_gk_count": 22,
+      "observation_count": 7,
+      "matched_count": 2,
+      "unmatched_gt_count": 20,
+      "unmatched_observation_count": 5
+    },
+    {
+      "source_frame_index": 117,
+      "timestamp_s": 4.68,
+      "gt_player_gk_count": 22,
+      "observation_count": 11,
+      "matched_count": 3,
+      "unmatched_gt_count": 19,
+      "unmatched_observation_count": 8
+    },
+    {
+      "source_frame_index": 121,
+      "timestamp_s": 4.84,
+      "gt_player_gk_count": 22,
+      "observation_count": 5,
+      "matched_count": 1,
+      "unmatched_gt_count": 21,
+      "unmatched_observation_count": 4
+    }
+  ],
+  "caveat": "Only matched detections can be assessed for identity continuity. Low detection coverage hides possible switches. MOT excludes referees/other humans. Three of 12 detection overlays were spot-checked; these 30 sampled tracking frames have not all been independently visually reviewed."
+}

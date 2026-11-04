@@ -1,0 +1,391 @@
+{
+  "schema": "touchline.level3.frozen_frames.v1",
+  "selection_policy": "Predeclared temporal grid; no detector output consulted",
+  "frames": [
+    {
+      "id": "118577-000000",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 0,
+      "timestamp_s": 0.0,
+      "pts": 0,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "6227f0e7c24a749c8b1769b2224e1256a39553b0dc44c0bd22a6df69d561354f",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-000500",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 500,
+      "timestamp_s": 20.0,
+      "pts": 1800000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "5d3d006513f6be06cf8908eb501bc54a9c86e0579c57b37c3efb9c710f0d9ab4",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-001000",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 1000,
+      "timestamp_s": 40.0,
+      "pts": 3600000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "29ca1448e58a651ffee32b20d4d097a3a34075338b21b5f6b049f4ffbed2fe8c",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-001500",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 1500,
+      "timestamp_s": 60.0,
+      "pts": 5400000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "c1c3dc38b366a048fc0f4d970e3bc4096c60cb0554bbb6bcaaef673ff130f083",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-002000",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 2000,
+      "timestamp_s": 80.0,
+      "pts": 7200000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "fba15ce5e30695ecfa98e2bced2c217650e86a3355ce13eb1eef51e0a0ec9861",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-002500",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 2500,
+      "timestamp_s": 100.0,
+      "pts": 9000000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "33e8a30cfc6cd7d2f23f14a447fbaa66eff3ecbceb71f074a60d5d0eda7d2e04",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-003000",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 3000,
+      "timestamp_s": 120.0,
+      "pts": 10800000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "3aa85dceff99230bd60b673bfb8978930c31169dab802b0aaf5c0aaf351e33d5",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-003500",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 3500,
+      "timestamp_s": 140.0,
+      "pts": 12600000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "1aa329975c59ac51ddaab109a026adab5f7853d50b947da8bfa5a734d79d7924",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-004000",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 4000,
+      "timestamp_s": 160.0,
+      "pts": 14400000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "e7d06995423127dc3c7710c0d913773aaaf327cf2071dab4d3c22f9e64b8320d",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-004500",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 4500,
+      "timestamp_s": 180.0,
+      "pts": 16200000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "15791e37e0a849ffe689aacb94e9285c19579859c513f4a97a69265205bf9a97",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-005000",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 5000,
+      "timestamp_s": 200.0,
+      "pts": 18000000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "f51bcaea399fb6fb375e682f06919592c4596b479694cc9224c5c5b1fcb81acb",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "118577-005500",
+      "video": "118577.mp4",
+      "video_sha256": "f0dfbef3b496867bd2a1261c9a4d4c538d3861bf15b50109e9287c6a1371fc04",
+      "source_frame_index": 5500,
+      "timestamp_s": 220.0,
+      "pts": 19800000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1080,
+      "image_sha256": "a4fe27106532b05299f9cf6a9f5f7583a6ffbad9fbcc7ef165dc92468a1d67d5",
+      "selection_reason": "20-second temporal grid across the full clip"
+    },
+    {
+      "id": "panorama-000125",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 125,
+      "timestamp_s": 5.0,
+      "pts": 540000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "c24de583c0de7cd3108a7d91e9b404875723088204a0d734018ec8e19d72e577",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-000200",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 200,
+      "timestamp_s": 8.0,
+      "pts": 810000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "3e3e784f385832eb393d9015fb23aca07cbacbad1df522adbb0745f4ccba84e3",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-000275",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 275,
+      "timestamp_s": 11.0,
+      "pts": 1080000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "4a8bd716a266ddc5cbe66b00898200967e31c4563d4a13307c1903c895cfe9e1",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-000350",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 350,
+      "timestamp_s": 14.0,
+      "pts": 1350000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "148f06cdfb836679182c91e0be8217ff3ca4b3d06288f9832a76bb090a0d55ba",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-034500",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 34500,
+      "timestamp_s": 1380.0,
+      "pts": 124290000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "b7f9a52aa738c40308164c6f22e099ea97f6fc4d5da16b4ba6b764c29ae6b58b",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-034575",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 34575,
+      "timestamp_s": 1383.0,
+      "pts": 124560000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "26ca0d1003d319db40f02629f529700c3a22da45531d54b02a858e6928ba83f3",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-034650",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 34650,
+      "timestamp_s": 1386.0,
+      "pts": 124830000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "a174a1a84633e60c53fea78fdfc920ac160831e1a981ac980b42006f8010b7ac",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-034725",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 34725,
+      "timestamp_s": 1389.0,
+      "pts": 125100000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "bdba643df5049dd0b8f8f79086a1ed847f8dc37c3eaa58e37603ad77a636abbd",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-067500",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 67500,
+      "timestamp_s": 2700.0,
+      "pts": 243090000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "9a729cd87bcebeff4aab8bc239fb71c4938c95b9e98f7bce7722d5688dbb3eda",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-067575",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 67575,
+      "timestamp_s": 2703.0,
+      "pts": 243360000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "7e4c0e9a7a90bbd29c1ef16e6321e760cbc93fc9138f6e1dc85689a5bbf658f6",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-067650",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 67650,
+      "timestamp_s": 2706.0,
+      "pts": 243630000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "65ab77157e94cb27863190d1ca88f79e8fe3c54cd14891c34ed35de1632e8250",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    },
+    {
+      "id": "panorama-067725",
+      "video": "132877_panorama_2nd_half.mp4",
+      "video_sha256": "7ee7c9bd415fac870155a22ae4d6b3989023927896ac3cad9cc40d537afca7c9",
+      "source_frame_index": 67725,
+      "timestamp_s": 2709.0,
+      "pts": 243900000,
+      "time_base": [
+        1,
+        90000
+      ],
+      "width": 4096,
+      "height": 1084,
+      "image_sha256": "4e332a639cca84aab044967451bfe0f83495549caebf3e65e23cfb6d89e9e332",
+      "selection_reason": "3-second temporal grid in early, middle and late windows"
+    }
+  ],
+  "publication_note": "Sanitized metadata only; gated frames and source videos are excluded from this repository."
+}

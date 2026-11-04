@@ -1,0 +1,1002 @@
+{
+  "schema": "touchline.level3.timing_comparison.v1",
+  "default": {
+    "schema": "touchline.level3.timing.v1",
+    "configuration": {
+      "adapter": "torchvision-detector-v1",
+      "architecture": "fasterrcnn_mobilenet_v3_large_320_fpn",
+      "checkpoint": "907ea3f91ff92242bc1baea8049276a3e76bca48ce7560bd268cc029f37977b5",
+      "torch": "2.15.0",
+      "torchvision": "0.29.2",
+      "device": "cpu",
+      "threshold": 0.5,
+      "min_size": 640,
+      "max_size": 1280
+    },
+    "hardware": "MacBook Air M3, CPU",
+    "method": "Two repetitions of all 24 frozen source PNGs, with one warm-up frame per video. Disk PNG loading and model construction excluded. Preprocess is PyAV->PIL->tensor; model forward includes Torchvision transform, RPN, ROI and NMS; postprocess includes source clipping and person/score filtering. Separate process per configuration.",
+    "transforms": {
+      "118577.mp4": {
+        "source_wh": [
+          4096,
+          1080
+        ],
+        "resized_hw": [
+          337,
+          1280
+        ],
+        "padded_nchw": [
+          1,
+          3,
+          352,
+          1280
+        ]
+      },
+      "132877_panorama_2nd_half.mp4": {
+        "source_wh": [
+          4096,
+          1084
+        ],
+        "resized_hw": [
+          338,
+          1280
+        ],
+        "padded_nchw": [
+          1,
+          3,
+          352,
+          1280
+        ]
+      }
+    },
+    "repetitions": 2,
+    "count": 48,
+    "summary": {
+      "mean_s": 0.2065294244997252,
+      "median_s": 0.1823515004998626,
+      "p95_s": 0.3005720898994695,
+      "total_elapsed_s": 9.91463270800159,
+      "effective_inference_fps": 4.841329115627417,
+      "peak_rss_bytes": 858505216,
+      "mean_preprocess_s": 0.020204072833318303,
+      "mean_model_forward_s": 0.1862835347294549,
+      "mean_postprocess_s": 4.181693695196979e-05
+    },
+    "per_frame": [
+      {
+        "frame_id": "118577-000000",
+        "repeat": 0,
+        "preprocess_s": 0.013599540998256998,
+        "model_forward_s": 0.1739800000032119,
+        "postprocess_s": 5.4541997087653726e-05,
+        "adapter_equivalent_s": 0.18763408299855655,
+        "retained_count": 8
+      },
+      {
+        "frame_id": "118577-000500",
+        "repeat": 0,
+        "preprocess_s": 0.017336207998596365,
+        "model_forward_s": 0.1807881249987986,
+        "postprocess_s": 4.912500298814848e-05,
+        "adapter_equivalent_s": 0.1981734580003831,
+        "retained_count": 6
+      },
+      {
+        "frame_id": "118577-001000",
+        "repeat": 0,
+        "preprocess_s": 0.026164750001044013,
+        "model_forward_s": 0.8113505830006034,
+        "postprocess_s": 0.00016554199828533456,
+        "adapter_equivalent_s": 0.8376808749999327,
+        "retained_count": 6
+      },
+      {
+        "frame_id": "118577-001500",
+        "repeat": 0,
+        "preprocess_s": 0.11145237500022631,
+        "model_forward_s": 0.212584250002692,
+        "postprocess_s": 3.2583997381152585e-05,
+        "adapter_equivalent_s": 0.32406920900029945,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-002000",
+        "repeat": 0,
+        "preprocess_s": 0.01994558400110691,
+        "model_forward_s": 0.32726924999951734,
+        "postprocess_s": 4.637500023818575e-05,
+        "adapter_equivalent_s": 0.34726120900086244,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "118577-002500",
+        "repeat": 0,
+        "preprocess_s": 0.028260792001674417,
+        "model_forward_s": 0.18202629200095544,
+        "postprocess_s": 3.262499740230851e-05,
+        "adapter_equivalent_s": 0.21031970900003216,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-003000",
+        "repeat": 0,
+        "preprocess_s": 0.017779833000531653,
+        "model_forward_s": 0.19720787500045844,
+        "postprocess_s": 3.62920000043232e-05,
+        "adapter_equivalent_s": 0.21502400000099442,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-003500",
+        "repeat": 0,
+        "preprocess_s": 0.01921408299676841,
+        "model_forward_s": 0.1849906670031487,
+        "postprocess_s": 3.50419977621641e-05,
+        "adapter_equivalent_s": 0.20423979199767928,
+        "retained_count": 7
+      },
+      {
+        "frame_id": "118577-004000",
+        "repeat": 0,
+        "preprocess_s": 0.016471249997266568,
+        "model_forward_s": 0.1527708329995221,
+        "postprocess_s": 4.950000220560469e-05,
+        "adapter_equivalent_s": 0.16929158299899427,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-004500",
+        "repeat": 0,
+        "preprocess_s": 0.020253416001651203,
+        "model_forward_s": 0.15023629200004507,
+        "postprocess_s": 2.712499917834066e-05,
+        "adapter_equivalent_s": 0.1705168330008746,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "118577-005000",
+        "repeat": 0,
+        "preprocess_s": 0.016122832999826642,
+        "model_forward_s": 0.17403237500184332,
+        "postprocess_s": 3.233399911550805e-05,
+        "adapter_equivalent_s": 0.19018754200078547,
+        "retained_count": 0
+      },
+      {
+        "frame_id": "118577-005500",
+        "repeat": 0,
+        "preprocess_s": 0.01754416699986905,
+        "model_forward_s": 0.17197741699783364,
+        "postprocess_s": 3.1583000236423686e-05,
+        "adapter_equivalent_s": 0.18955316699793912,
+        "retained_count": 1
+      },
+      {
+        "frame_id": "panorama-000125",
+        "repeat": 0,
+        "preprocess_s": 0.01667950000046403,
+        "model_forward_s": 0.1655487499992887,
+        "postprocess_s": 6.383399886544794e-05,
+        "adapter_equivalent_s": 0.18229208399861818,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "panorama-000200",
+        "repeat": 0,
+        "preprocess_s": 0.020187124999210937,
+        "model_forward_s": 0.21399412500250037,
+        "postprocess_s": 5.4332998843165115e-05,
+        "adapter_equivalent_s": 0.23423558300055447,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "panorama-000275",
+        "repeat": 0,
+        "preprocess_s": 0.022754832996724872,
+        "model_forward_s": 0.18734895800298546,
+        "postprocess_s": 5.4208998335525393e-05,
+        "adapter_equivalent_s": 0.21015799999804585,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "panorama-000350",
+        "repeat": 0,
+        "preprocess_s": 0.022138040996651398,
+        "model_forward_s": 0.19671137500336044,
+        "postprocess_s": 3.354199725436047e-05,
+        "adapter_equivalent_s": 0.2188829579972662,
+        "retained_count": 1
+      },
+      {
+        "frame_id": "panorama-034500",
+        "repeat": 0,
+        "preprocess_s": 0.016920958001719555,
+        "model_forward_s": 0.1442937499996333,
+        "postprocess_s": 3.558399839675985e-05,
+        "adapter_equivalent_s": 0.1612502919997496,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "panorama-034575",
+        "repeat": 0,
+        "preprocess_s": 0.016301957999530714,
+        "model_forward_s": 0.16053787500277394,
+        "postprocess_s": 4.350000017439015e-05,
+        "adapter_equivalent_s": 0.17688333300247905,
+        "retained_count": 5
+      },
+      {
+        "frame_id": "panorama-034650",
+        "repeat": 0,
+        "preprocess_s": 0.01929658299923176,
+        "model_forward_s": 0.15441233299861779,
+        "postprocess_s": 3.625000317697413e-05,
+        "adapter_equivalent_s": 0.17374516600102652,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "panorama-034725",
+        "repeat": 0,
+        "preprocess_s": 0.019243209000705974,
+        "model_forward_s": 0.23542958300095052,
+        "postprocess_s": 9.920799857354723e-05,
+        "adapter_equivalent_s": 0.25477200000023004,
+        "retained_count": 5
+      },
+      {
+        "frame_id": "panorama-067500",
+        "repeat": 0,
+        "preprocess_s": 0.047128750000410946,
+        "model_forward_s": 0.14794420899852412,
+        "postprocess_s": 3.016600021510385e-05,
+        "adapter_equivalent_s": 0.19510312499915017,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "panorama-067575",
+        "repeat": 0,
+        "preprocess_s": 0.015793291000591125,
+        "model_forward_s": 0.14483270900018397,
+        "postprocess_s": 4.025000089313835e-05,
+        "adapter_equivalent_s": 0.16066625000166823,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "panorama-067650",
+        "repeat": 0,
+        "preprocess_s": 0.01660920799986343,
+        "model_forward_s": 0.14364970899987384,
+        "postprocess_s": 2.3708002117928118e-05,
+        "adapter_equivalent_s": 0.1602826250018552,
+        "retained_count": 1
+      },
+      {
+        "frame_id": "panorama-067725",
+        "repeat": 0,
+        "preprocess_s": 0.0160187080000469,
+        "model_forward_s": 0.1470535420012311,
+        "postprocess_s": 4.875000013271347e-05,
+        "adapter_equivalent_s": 0.16312100000141072,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-000000",
+        "repeat": 1,
+        "preprocess_s": 0.02225529200222809,
+        "model_forward_s": 0.1847176249975746,
+        "postprocess_s": 3.995800216216594e-05,
+        "adapter_equivalent_s": 0.20701287500196486,
+        "retained_count": 8
+      },
+      {
+        "frame_id": "118577-000500",
+        "repeat": 1,
+        "preprocess_s": 0.01642925000123796,
+        "model_forward_s": 0.18532295799741405,
+        "postprocess_s": 5.0583999836817384e-05,
+        "adapter_equivalent_s": 0.20180279199848883,
+        "retained_count": 6
+      },
+      {
+        "frame_id": "118577-001000",
+        "repeat": 1,
+        "preprocess_s": 0.0219688329998462,
+        "model_forward_s": 0.23493066700029885,
+        "postprocess_s": 3.5082997783320025e-05,
+        "adapter_equivalent_s": 0.2569345829979284,
+        "retained_count": 6
+      },
+      {
+        "frame_id": "118577-001500",
+        "repeat": 1,
+        "preprocess_s": 0.017348041001241654,
+        "model_forward_s": 0.18841124999744352,
+        "postprocess_s": 3.454200123087503e-05,
+        "adapter_equivalent_s": 0.20579383299991605,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-002000",
+        "repeat": 1,
+        "preprocess_s": 0.01985929200236569,
+        "model_forward_s": 0.21870158299861941,
+        "postprocess_s": 5.2583000069716945e-05,
+        "adapter_equivalent_s": 0.23861345800105482,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "118577-002500",
+        "repeat": 1,
+        "preprocess_s": 0.02792583400150761,
+        "model_forward_s": 0.19132429100136505,
+        "postprocess_s": 3.024999750778079e-05,
+        "adapter_equivalent_s": 0.21928037500038045,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-003000",
+        "repeat": 1,
+        "preprocess_s": 0.016108708001411287,
+        "model_forward_s": 0.1485285839989956,
+        "postprocess_s": 2.8624999686144292e-05,
+        "adapter_equivalent_s": 0.16466591700009303,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-003500",
+        "repeat": 1,
+        "preprocess_s": 0.015751874998386484,
+        "model_forward_s": 0.14222074999997858,
+        "postprocess_s": 3.004199970746413e-05,
+        "adapter_equivalent_s": 0.15800266699807253,
+        "retained_count": 7
+      },
+      {
+        "frame_id": "118577-004000",
+        "repeat": 1,
+        "preprocess_s": 0.01621133399748942,
+        "model_forward_s": 0.14402529100334505,
+        "postprocess_s": 3.5916997148888186e-05,
+        "adapter_equivalent_s": 0.16027254199798335,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "118577-004500",
+        "repeat": 1,
+        "preprocess_s": 0.016170667000551475,
+        "model_forward_s": 0.14622333299848833,
+        "postprocess_s": 2.558299820520915e-05,
+        "adapter_equivalent_s": 0.16241958299724502,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "118577-005000",
+        "repeat": 1,
+        "preprocess_s": 0.015974624999216758,
+        "model_forward_s": 0.1440788750005595,
+        "postprocess_s": 3.024999750778079e-05,
+        "adapter_equivalent_s": 0.16008374999728403,
+        "retained_count": 0
+      },
+      {
+        "frame_id": "118577-005500",
+        "repeat": 1,
+        "preprocess_s": 0.016138957998919068,
+        "model_forward_s": 0.14680712499830406,
+        "postprocess_s": 3.46670021826867e-05,
+        "adapter_equivalent_s": 0.16298074999940582,
+        "retained_count": 1
+      },
+      {
+        "frame_id": "panorama-000125",
+        "repeat": 1,
+        "preprocess_s": 0.017140249998192303,
+        "model_forward_s": 0.14302658300221083,
+        "postprocess_s": 3.745899812201969e-05,
+        "adapter_equivalent_s": 0.16020429199852515,
+        "retained_count": 3
+      },
+      {
+        "frame_id": "panorama-000200",
+        "repeat": 1,
+        "preprocess_s": 0.01426579200051492,
+        "model_forward_s": 0.13986829100031173,
+        "postprocess_s": 3.387499964446761e-05,
+        "adapter_equivalent_s": 0.15416795800047112,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "panorama-000275",
+        "repeat": 1,
+        "preprocess_s": 0.013939458000095328,
+        "model_forward_s": 0.15040824999960023,
+        "postprocess_s": 3.345799996168353e-05,
+        "adapter_equivalent_s": 0.16438116599965724,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "panorama-000350",
+        "repeat": 1,
+        "preprocess_s": 0.015392541001347126,
+        "model_forward_s": 0.14836324999851058,
+        "postprocess_s": 3.0084000172792003e-05,
+        "adapter_equivalent_s": 0.1637858750000305,
+        "retained_count": 1
+      },
+      {
+        "frame_id": "panorama-034500",
+        "repeat": 1,
+        "preprocess_s": 0.014308334000816103,
+        "model_forward_s": 0.14350474999810103,
+        "postprocess_s": 2.9666000045835972e-05,
+        "adapter_equivalent_s": 0.15784274999896297,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "panorama-034575",
+        "repeat": 1,
+        "preprocess_s": 0.0139484999999695,
+        "model_forward_s": 0.1407928750013525,
+        "postprocess_s": 3.766699956031516e-05,
+        "adapter_equivalent_s": 0.15477904200088233,
+        "retained_count": 5
+      },
+      {
+        "frame_id": "panorama-034650",
+        "repeat": 1,
+        "preprocess_s": 0.013909541001339676,
+        "model_forward_s": 0.14378429199859966,
+        "postprocess_s": 3.537500015227124e-05,
+        "adapter_equivalent_s": 0.1577292080000916,
+        "retained_count": 4
+      },
+      {
+        "frame_id": "panorama-034725",
+        "repeat": 1,
+        "preprocess_s": 0.014157167002849746,
+        "model_forward_s": 0.1682128329994157,
+        "postprocess_s": 4.0916998841566965e-05,
+        "adapter_equivalent_s": 0.182410917001107,
+        "retained_count": 5
+      },
+      {
+        "frame_id": "panorama-067500",
+        "repeat": 1,
+        "preprocess_s": 0.013748874996963423,
+        "model_forward_s": 0.16661962500074878,
+        "postprocess_s": 3.254200055380352e-05,
+        "adapter_equivalent_s": 0.180401041998266,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "panorama-067575",
+        "repeat": 1,
+        "preprocess_s": 0.013139417002093978,
+        "model_forward_s": 0.20713916599925142,
+        "postprocess_s": 5.437499930849299e-05,
+        "adapter_equivalent_s": 0.2203329580006539,
+        "retained_count": 2
+      },
+      {
+        "frame_id": "panorama-067650",
+        "repeat": 1,
+        "preprocess_s": 0.01721012499911012,
+        "model_forward_s": 0.2113118340021174,
+        "postprocess_s": 3.024999750778079e-05,
+        "adapter_equivalent_s": 0.2285522089987353,
+        "retained_count": 1
+      },
+      {
+        "frame_id": "panorama-067725",
+        "repeat": 1,
+        "preprocess_s": 0.0132757909996144,
+        "model_forward_s": 0.14231470900267595,
+        "postprocess_s": 2.745799793046899e-05,
+        "adapter_equivalent_s": 0.15561795800022082,
+        "retained_count": 3
+      }
+    ]
+  },
+  "higher_resolution": {
+    "schema": "touchline.level3.timing.v1",
+    "configuration": {
+      "adapter": "torchvision-detector-v1",
+      "architecture": "fasterrcnn_mobilenet_v3_large_320_fpn",
+      "checkpoint": "907ea3f91ff92242bc1baea8049276a3e76bca48ce7560bd268cc029f37977b5",
+      "torch": "2.15.0",
+      "torchvision": "0.29.2",
+      "device": "cpu",
+      "threshold": 0.5,
+      "min_size": 640,
+      "max_size": 2560
+    },
+    "hardware": "MacBook Air M3, CPU",
+    "method": "Two repetitions of all 24 frozen source PNGs, with one warm-up frame per video. Disk PNG loading and model construction excluded. Preprocess is PyAV->PIL->tensor; model forward includes Torchvision transform, RPN, ROI and NMS; postprocess includes source clipping and person/score filtering. Separate process per configuration.",
+    "transforms": {
+      "118577.mp4": {
+        "source_wh": [
+          4096,
+          1080
+        ],
+        "resized_hw": [
+          640,
+          2427
+        ],
+        "padded_nchw": [
+          1,
+          3,
+          640,
+          2432
+        ]
+      },
+      "132877_panorama_2nd_half.mp4": {
+        "source_wh": [
+          4096,
+          1084
+        ],
+        "resized_hw": [
+          640,
+          2418
+        ],
+        "padded_nchw": [
+          1,
+          3,
+          640,
+          2432
+        ]
+      }
+    },
+    "repetitions": 2,
+    "count": 48,
+    "summary": {
+      "mean_s": 0.5723254637082391,
+      "median_s": 0.5018625215016073,
+      "p95_s": 0.9025973437503122,
+      "total_elapsed_s": 27.472304708000593,
+      "effective_inference_fps": 1.7472141675110808,
+      "peak_rss_bytes": 1245839360,
+      "mean_preprocess_s": 0.029584296062315236,
+      "mean_model_forward_s": 0.5426823906461019,
+      "mean_postprocess_s": 5.8776999821930076e-05
+    },
+    "per_frame": [
+      {
+        "frame_id": "118577-000000",
+        "repeat": 0,
+        "preprocess_s": 0.037577832998067606,
+        "model_forward_s": 0.5155683340017276,
+        "postprocess_s": 7.750000077066943e-05,
+        "adapter_equivalent_s": 0.5532236670005659,
+        "retained_count": 16
+      },
+      {
+        "frame_id": "118577-000500",
+        "repeat": 0,
+        "preprocess_s": 0.016959500000666594,
+        "model_forward_s": 0.6041205000001355,
+        "postprocess_s": 6.570899859070778e-05,
+        "adapter_equivalent_s": 0.6211457089993928,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "118577-001000",
+        "repeat": 0,
+        "preprocess_s": 0.03203366700108745,
+        "model_forward_s": 0.6964823749985953,
+        "postprocess_s": 6.208300328580663e-05,
+        "adapter_equivalent_s": 0.7285781250029686,
+        "retained_count": 23
+      },
+      {
+        "frame_id": "118577-001500",
+        "repeat": 0,
+        "preprocess_s": 0.02069166699948255,
+        "model_forward_s": 0.5168511250012671,
+        "postprocess_s": 4.6124998334562406e-05,
+        "adapter_equivalent_s": 0.5375889169990842,
+        "retained_count": 12
+      },
+      {
+        "frame_id": "118577-002000",
+        "repeat": 0,
+        "preprocess_s": 0.020185459001368145,
+        "model_forward_s": 0.5792393749979965,
+        "postprocess_s": 4.629100294550881e-05,
+        "adapter_equivalent_s": 0.5994711250023101,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "118577-002500",
+        "repeat": 0,
+        "preprocess_s": 0.06283137500213343,
+        "model_forward_s": 0.9333321249978326,
+        "postprocess_s": 0.00013649999891640618,
+        "adapter_equivalent_s": 0.9962999999988824,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "118577-003000",
+        "repeat": 0,
+        "preprocess_s": 0.07054983299894957,
+        "model_forward_s": 0.5043490839998412,
+        "postprocess_s": 3.420800203457475e-05,
+        "adapter_equivalent_s": 0.5749331250008254,
+        "retained_count": 11
+      },
+      {
+        "frame_id": "118577-003500",
+        "repeat": 0,
+        "preprocess_s": 0.016868583999894327,
+        "model_forward_s": 0.4128601250013162,
+        "postprocess_s": 4.749999789055437e-05,
+        "adapter_equivalent_s": 0.4297762089991011,
+        "retained_count": 17
+      },
+      {
+        "frame_id": "118577-004000",
+        "repeat": 0,
+        "preprocess_s": 0.018984000002092216,
+        "model_forward_s": 0.40217766699788626,
+        "postprocess_s": 9.741699977894314e-05,
+        "adapter_equivalent_s": 0.4212590839997574,
+        "retained_count": 18
+      },
+      {
+        "frame_id": "118577-004500",
+        "repeat": 0,
+        "preprocess_s": 0.021053291999123758,
+        "model_forward_s": 0.4483517500011658,
+        "postprocess_s": 3.870799992000684e-05,
+        "adapter_equivalent_s": 0.46944375000020955,
+        "retained_count": 17
+      },
+      {
+        "frame_id": "118577-005000",
+        "repeat": 0,
+        "preprocess_s": 0.020746792000863934,
+        "model_forward_s": 0.5069235830014804,
+        "postprocess_s": 6.379199840012006e-05,
+        "adapter_equivalent_s": 0.5277341670007445,
+        "retained_count": 13
+      },
+      {
+        "frame_id": "118577-005500",
+        "repeat": 0,
+        "preprocess_s": 0.021323708999261726,
+        "model_forward_s": 0.4997722080006497,
+        "postprocess_s": 4.1667000914458185e-05,
+        "adapter_equivalent_s": 0.5211375840008259,
+        "retained_count": 18
+      },
+      {
+        "frame_id": "panorama-000125",
+        "repeat": 0,
+        "preprocess_s": 0.021766707999631763,
+        "model_forward_s": 0.5401627920000465,
+        "postprocess_s": 3.737500082934275e-05,
+        "adapter_equivalent_s": 0.5619668750005076,
+        "retained_count": 17
+      },
+      {
+        "frame_id": "panorama-000200",
+        "repeat": 0,
+        "preprocess_s": 0.028823207998357248,
+        "model_forward_s": 0.4068886669992935,
+        "postprocess_s": 5.491599949891679e-05,
+        "adapter_equivalent_s": 0.43576679099714966,
+        "retained_count": 16
+      },
+      {
+        "frame_id": "panorama-000275",
+        "repeat": 0,
+        "preprocess_s": 0.021460416999616427,
+        "model_forward_s": 0.3865358330003801,
+        "postprocess_s": 4.366699795355089e-05,
+        "adapter_equivalent_s": 0.40803991699795006,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "panorama-000350",
+        "repeat": 0,
+        "preprocess_s": 0.017651624999416526,
+        "model_forward_s": 0.4176289999995788,
+        "postprocess_s": 3.5832999856211245e-05,
+        "adapter_equivalent_s": 0.43531645799885155,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-034500",
+        "repeat": 0,
+        "preprocess_s": 0.01573149999967427,
+        "model_forward_s": 0.3146705409999413,
+        "postprocess_s": 3.5000000934815034e-05,
+        "adapter_equivalent_s": 0.3304370410005504,
+        "retained_count": 11
+      },
+      {
+        "frame_id": "panorama-034575",
+        "repeat": 0,
+        "preprocess_s": 0.015478416997211752,
+        "model_forward_s": 0.3401012080030341,
+        "postprocess_s": 4.695899770013057e-05,
+        "adapter_equivalent_s": 0.355626583997946,
+        "retained_count": 16
+      },
+      {
+        "frame_id": "panorama-034650",
+        "repeat": 0,
+        "preprocess_s": 0.015762666997034103,
+        "model_forward_s": 0.3448611250023532,
+        "postprocess_s": 4.137499854550697e-05,
+        "adapter_equivalent_s": 0.36066516699793283,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-034725",
+        "repeat": 0,
+        "preprocess_s": 0.015740165999886813,
+        "model_forward_s": 0.3739874589991814,
+        "postprocess_s": 4.970800000592135e-05,
+        "adapter_equivalent_s": 0.38977733299907413,
+        "retained_count": 19
+      },
+      {
+        "frame_id": "panorama-067500",
+        "repeat": 0,
+        "preprocess_s": 0.019929707999835955,
+        "model_forward_s": 0.4096925830017426,
+        "postprocess_s": 4.708399865194224e-05,
+        "adapter_equivalent_s": 0.4296693750002305,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-067575",
+        "repeat": 0,
+        "preprocess_s": 0.01694195900199702,
+        "model_forward_s": 0.34003895799833117,
+        "postprocess_s": 4.816699947696179e-05,
+        "adapter_equivalent_s": 0.35702908399980515,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-067650",
+        "repeat": 0,
+        "preprocess_s": 0.02416487500158837,
+        "model_forward_s": 0.3560342919990944,
+        "postprocess_s": 4.450000051292591e-05,
+        "adapter_equivalent_s": 0.3802436670011957,
+        "retained_count": 10
+      },
+      {
+        "frame_id": "panorama-067725",
+        "repeat": 0,
+        "preprocess_s": 0.01637204199869302,
+        "model_forward_s": 0.41164587499952177,
+        "postprocess_s": 4.0833001548890024e-05,
+        "adapter_equivalent_s": 0.4280587499997637,
+        "retained_count": 7
+      },
+      {
+        "frame_id": "118577-000000",
+        "repeat": 1,
+        "preprocess_s": 0.02910645800147904,
+        "model_forward_s": 0.5620339169981889,
+        "postprocess_s": 4.450000051292591e-05,
+        "adapter_equivalent_s": 0.5911848750001809,
+        "retained_count": 16
+      },
+      {
+        "frame_id": "118577-000500",
+        "repeat": 1,
+        "preprocess_s": 0.033208040997124044,
+        "model_forward_s": 0.3448042920026637,
+        "postprocess_s": 4.541699672699906e-05,
+        "adapter_equivalent_s": 0.37805774999651476,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "118577-001000",
+        "repeat": 1,
+        "preprocess_s": 0.018195332999312086,
+        "model_forward_s": 0.39639495799929136,
+        "postprocess_s": 3.633400046965107e-05,
+        "adapter_equivalent_s": 0.4146266249990731,
+        "retained_count": 23
+      },
+      {
+        "frame_id": "118577-001500",
+        "repeat": 1,
+        "preprocess_s": 0.01573729200026719,
+        "model_forward_s": 0.33342925000033574,
+        "postprocess_s": 3.9582999306730926e-05,
+        "adapter_equivalent_s": 0.34920612499990966,
+        "retained_count": 12
+      },
+      {
+        "frame_id": "118577-002000",
+        "repeat": 1,
+        "preprocess_s": 0.017643665996729396,
+        "model_forward_s": 0.3821242500016524,
+        "postprocess_s": 4.1667000914458185e-05,
+        "adapter_equivalent_s": 0.39980958299929625,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "118577-002500",
+        "repeat": 1,
+        "preprocess_s": 0.016911333001189632,
+        "model_forward_s": 0.5288159580013598,
+        "postprocess_s": 4.608399831340648e-05,
+        "adapter_equivalent_s": 0.5457733750008629,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "118577-003000",
+        "repeat": 1,
+        "preprocess_s": 0.020363542000268353,
+        "model_forward_s": 0.7065694170014467,
+        "postprocess_s": 0.00010012499842559919,
+        "adapter_equivalent_s": 0.7270330840001407,
+        "retained_count": 11
+      },
+      {
+        "frame_id": "118577-003500",
+        "repeat": 1,
+        "preprocess_s": 0.09406083300200407,
+        "model_forward_s": 2.641990957999951,
+        "postprocess_s": 0.0002397089992882684,
+        "adapter_equivalent_s": 2.7362915000012435,
+        "retained_count": 17
+      },
+      {
+        "frame_id": "118577-004000",
+        "repeat": 1,
+        "preprocess_s": 0.09188066699789488,
+        "model_forward_s": 1.2887164170024334,
+        "postprocess_s": 0.00013233299978310242,
+        "adapter_equivalent_s": 1.3807294170001114,
+        "retained_count": 18
+      },
+      {
+        "frame_id": "118577-004500",
+        "repeat": 1,
+        "preprocess_s": 0.07032662499841535,
+        "model_forward_s": 0.5365118750014517,
+        "postprocess_s": 5.762499858974479e-05,
+        "adapter_equivalent_s": 0.6068961249984568,
+        "retained_count": 17
+      },
+      {
+        "frame_id": "118577-005000",
+        "repeat": 1,
+        "preprocess_s": 0.024305750001076376,
+        "model_forward_s": 0.5067023749979853,
+        "postprocess_s": 5.358400085242465e-05,
+        "adapter_equivalent_s": 0.5310617089999141,
+        "retained_count": 13
+      },
+      {
+        "frame_id": "118577-005500",
+        "repeat": 1,
+        "preprocess_s": 0.016969959000562085,
+        "model_forward_s": 0.47512991600160603,
+        "postprocess_s": 5.554199742618948e-05,
+        "adapter_equivalent_s": 0.4921554169995943,
+        "retained_count": 18
+      },
+      {
+        "frame_id": "panorama-000125",
+        "repeat": 1,
+        "preprocess_s": 0.14205491699976847,
+        "model_forward_s": 0.5737454169975535,
+        "postprocess_s": 4.4291002268437296e-05,
+        "adapter_equivalent_s": 0.7158446249995905,
+        "retained_count": 17
+      },
+      {
+        "frame_id": "panorama-000200",
+        "repeat": 1,
+        "preprocess_s": 0.017387915999279357,
+        "model_forward_s": 0.4594647920021089,
+        "postprocess_s": 5.929200051468797e-05,
+        "adapter_equivalent_s": 0.4769120000019029,
+        "retained_count": 16
+      },
+      {
+        "frame_id": "panorama-000275",
+        "repeat": 1,
+        "preprocess_s": 0.01817125000161468,
+        "model_forward_s": 0.4754593340003339,
+        "postprocess_s": 5.824999971082434e-05,
+        "adapter_equivalent_s": 0.4936888340016594,
+        "retained_count": 14
+      },
+      {
+        "frame_id": "panorama-000350",
+        "repeat": 1,
+        "preprocess_s": 0.021061917002953123,
+        "model_forward_s": 0.4459253749992058,
+        "postprocess_s": 4.491700019570999e-05,
+        "adapter_equivalent_s": 0.46703220900235465,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-034500",
+        "repeat": 1,
+        "preprocess_s": 0.0201811250008177,
+        "model_forward_s": 0.5247267919985461,
+        "postprocess_s": 3.7417001294670627e-05,
+        "adapter_equivalent_s": 0.5449453340006585,
+        "retained_count": 11
+      },
+      {
+        "frame_id": "panorama-034575",
+        "repeat": 1,
+        "preprocess_s": 0.01728749999892898,
+        "model_forward_s": 0.41703441700155963,
+        "postprocess_s": 4.483299926505424e-05,
+        "adapter_equivalent_s": 0.43436674999975367,
+        "retained_count": 16
+      },
+      {
+        "frame_id": "panorama-034650",
+        "repeat": 1,
+        "preprocess_s": 0.017047458000888582,
+        "model_forward_s": 0.6028462079993915,
+        "postprocess_s": 0.0001019589981297031,
+        "adapter_equivalent_s": 0.6199956249984098,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-034725",
+        "repeat": 1,
+        "preprocess_s": 0.02809779200106277,
+        "model_forward_s": 0.4818911250004021,
+        "postprocess_s": 4.729200009023771e-05,
+        "adapter_equivalent_s": 0.5100362090015551,
+        "retained_count": 19
+      },
+      {
+        "frame_id": "panorama-067500",
+        "repeat": 1,
+        "preprocess_s": 0.017490916998212924,
+        "model_forward_s": 0.40003175000310875,
+        "postprocess_s": 5.420799789135344e-05,
+        "adapter_equivalent_s": 0.41757687499921303,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-067575",
+        "repeat": 1,
+        "preprocess_s": 0.03462924999985262,
+        "model_forward_s": 0.4947047079986078,
+        "postprocess_s": 4.7500001528533176e-05,
+        "adapter_equivalent_s": 0.5293814579999889,
+        "retained_count": 15
+      },
+      {
+        "frame_id": "panorama-067650",
+        "repeat": 1,
+        "preprocess_s": 0.025434208997467067,
+        "model_forward_s": 0.5491062910004985,
+        "postprocess_s": 5.525000233319588e-05,
+        "adapter_equivalent_s": 0.5745957500002987,
+        "retained_count": 10
+      },
+      {
+        "frame_id": "panorama-067725",
+        "repeat": 1,
+        "preprocess_s": 0.022863457998028025,
+        "model_forward_s": 0.6583183750008175,
+        "postprocess_s": 5.066700032330118e-05,
+        "adapter_equivalent_s": 0.6812324999991688,
+        "retained_count": 7
+      }
+    ]
+  },
+  "comparison": {
+    "mean_latency_ratio_higher_over_default": 2.7711570159776464,
+    "peak_rss_difference_bytes": 387334144,
+    "note": "Peak RSS includes model and 24 preloaded frames; not isolated model activation memory."
+  }
+}

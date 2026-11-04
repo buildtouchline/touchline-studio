@@ -1,0 +1,22 @@
+{
+  "schema": "touchline.level3.metrics.v1",
+  "status": "blocked_unreviewed_ground_truth",
+  "total_frames": 5,
+  "reviewed_frames": 0,
+  "unreviewed_frame_ids": [
+    "118577-000000",
+    "118577-003500",
+    "panorama-000125",
+    "panorama-034575",
+    "panorama-067650"
+  ],
+  "note": "No TP/FP/FN, precision, recall, F1 or model recommendation is valid for this scope until a human reviews every included frame.",
+  "scope": "preliminary_five_frame_batch",
+  "frame_ids": [
+    "118577-000000",
+    "118577-003500",
+    "panorama-000125",
+    "panorama-034575",
+    "panorama-067650"
+  ]
+}

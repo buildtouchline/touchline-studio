@@ -1,0 +1,33 @@
+# Copy/edit privately as .env at the selected checkout root; never commit real values.
+# These example artifact paths are relative to this selected file's parent.
+# Replace YOUR_RUN_ID and stage/copy the actual Drive export before using them.
+TOUCHLINE_EXPORT_DIR=artifacts/model-runs/YOUR_RUN_ID
+TOUCHLINE_CHECKPOINT_PATH=artifacts/model-runs/YOUR_RUN_ID/candidate-train/candidate.pt
+TOUCHLINE_DATASET_MANIFEST=artifacts/dataset-releases/YOUR_RUN_ID/release.json
+TOUCHLINE_RUNS_DIR=runs
+TOUCHLINE_DEVICE=cpu
+TOUCHLINE_MODAL_VOLUME_NAME=touchline-artifacts
+
+# Existing trained checkpoint inference needs no model API key.
+# Hosted helpers below remain subject to access/budget/controller integration.
+BASETEN_API_KEY=
+META_API_KEY=
+# Optional Sarvam-generated speech for Meta transcription tests:
+SARVAM_API_KEY=
+MODAL_TOKEN_ID=
+MODAL_TOKEN_SECRET=
+
+BASETEN_BASE_URL=https://inference.baseten.co/v1
+BASETEN_MODEL=meta-models/muse-spark-open-1026
+META_BASE_URL=https://api.meta.ai/v1
+META_SAM_MODEL=sam-3.1
+TOUCHLINE_TRAINING_ENABLED=false
+TOUCHLINE_AUTOFIX_ENABLED=false
+
+# Optional later only:
+# FIREWORKS_API_KEY=
+# HF_TOKEN=
+# After the authenticated custom detector web app is deployed:
+# TOUCHLINE_DETECTOR_ENDPOINT_URL=https://YOUR-APP.modal.run
+# MODAL_PROXY_TOKEN_ID=
+# MODAL_PROXY_TOKEN_SECRET=

@@ -1,0 +1,102 @@
+[
+  {
+    "label_id": "PLACEHOLDER-CASE-01-FAR-OCCLUDED",
+    "source_id": "REPLACE-with-exact-manifest-source-id",
+    "pts": 1000,
+    "timestamp_s": 1.0,
+    "frame_index": 24,
+    "bbox_xyxy": [120.0, 85.0, 145.0, 135.0],
+    "annotation_metadata": {
+      "case_description": "PLACEHOLDER: Far-field player partially occluded by another player near penalty arc",
+      "target_category": "miss_case",
+      "near_far": "far",
+      "occlusion": "partial",
+      "motion_blur": false,
+      "edge_truncation": false,
+      "crossing": true,
+      "visibility_state": "partially-visible",
+      "label_uncertainty": "confirmed",
+      "coordinate_reminder": "Coordinates are zero-origin image pixel XYXY [x1, y1, x2, y2]. Pixel box size is not physical distance."
+    }
+  },
+  {
+    "label_id": "PLACEHOLDER-CASE-02-NEAR-MOTION-BLUR",
+    "source_id": "REPLACE-with-exact-manifest-source-id",
+    "pts": 1041,
+    "timestamp_s": 1.041667,
+    "frame_index": 25,
+    "bbox_xyxy": [250.0, 180.0, 360.0, 420.0],
+    "annotation_metadata": {
+      "case_description": "PLACEHOLDER: Near-field foreground player undergoing rapid motion blur during sprint",
+      "target_category": "miss_case",
+      "near_far": "near",
+      "occlusion": "none",
+      "motion_blur": true,
+      "edge_truncation": false,
+      "crossing": false,
+      "visibility_state": "visible",
+      "label_uncertainty": "confirmed",
+      "coordinate_reminder": "Coordinates are zero-origin image pixel XYXY [x1, y1, x2, y2]. Pixel box size is not physical distance."
+    }
+  },
+  {
+    "label_id": "PLACEHOLDER-CASE-03-EDGE-TRUNCATION",
+    "source_id": "REPLACE-with-exact-manifest-source-id",
+    "pts": 1083,
+    "timestamp_s": 1.083333,
+    "frame_index": 26,
+    "bbox_xyxy": [0.0, 120.0, 45.0, 260.0],
+    "annotation_metadata": {
+      "case_description": "PLACEHOLDER: Player entering frame at image boundary with body partially truncated by frame edge",
+      "target_category": "miss_case",
+      "near_far": "near",
+      "occlusion": "none",
+      "motion_blur": false,
+      "edge_truncation": true,
+      "crossing": false,
+      "visibility_state": "partially-visible",
+      "label_uncertainty": "confirmed",
+      "coordinate_reminder": "Coordinates are zero-origin image pixel XYXY [x1, y1, x2, y2]. Pixel box size is not physical distance."
+    }
+  },
+  {
+    "label_id": "PLACEHOLDER-CASE-04-SUCCESSFUL-CONTROL",
+    "source_id": "REPLACE-with-exact-manifest-source-id",
+    "pts": 1125,
+    "timestamp_s": 1.125,
+    "frame_index": 27,
+    "bbox_xyxy": [450.0, 150.0, 520.0, 310.0],
+    "annotation_metadata": {
+      "case_description": "PLACEHOLDER: Fully visible, unoccluded player serving as positive baseline control",
+      "target_category": "successful_control",
+      "near_far": "near",
+      "occlusion": "none",
+      "motion_blur": false,
+      "edge_truncation": false,
+      "crossing": false,
+      "visibility_state": "visible",
+      "label_uncertainty": "confirmed",
+      "coordinate_reminder": "Coordinates are zero-origin image pixel XYXY [x1, y1, x2, y2]. Pixel box size is not physical distance."
+    }
+  },
+  {
+    "label_id": "PLACEHOLDER-CASE-05-EMPTY-BACKGROUND-CONTROL",
+    "source_id": "REPLACE-with-exact-manifest-source-id",
+    "pts": 1167,
+    "timestamp_s": 1.166667,
+    "frame_index": 28,
+    "bbox_xyxy": null,
+    "annotation_metadata": {
+      "case_description": "PLACEHOLDER: Verified empty-background frame containing zero visible people to test false positives",
+      "target_category": "empty_background_control",
+      "near_far": null,
+      "occlusion": null,
+      "motion_blur": false,
+      "edge_truncation": false,
+      "crossing": false,
+      "visibility_state": "off-camera",
+      "label_uncertainty": "confirmed",
+      "coordinate_reminder": "bbox_xyxy must be null for empty_background_control. Pixel box size is not physical distance."
+    }
+  }
+]

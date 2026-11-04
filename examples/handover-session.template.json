@@ -1,0 +1,15 @@
+{
+  "run_id": "takeover-YYYYMMDD-analysis-001",
+  "operation": "analysis",
+  "native": true,
+  "snapshot_image_id": "im-REPLACE_WITH_SHARED_DATA_SNAPSHOT",
+  "checkpoint": "artifacts/handover/candidate.pt",
+  "checkpoint_sha256": "b9200825a2bb3e39589fb705ced502531136b2cc70496c0a0d9a8519e2e99063",
+  "video24": "artifacts/handover/video24.mp4",
+  "baseline_observations": "artifacts/handover/baseline-observations.jsonl",
+  "reference_evaluation": "artifacts/handover/reference-evaluation.json",
+  "owner_budget_confirmed": false,
+  "prior_upper_bound_usd": "0.00",
+  "available_headroom_usd": "0.00",
+  "job_cap_usd": "2.00"
+}

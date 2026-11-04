@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+/build/
+/dist/
+.env
+.env.*
+!.env.example
+/data/
+/artifacts/
+/runs/
+/models/
+*.pt
+*.pth
+*.mp4
+*.mov
+*.avi
+*.mkv
+.ipynb_checkpoints/
+.DS_Store
+.test-temp/
+
+# Legacy operator speech-key files are never repository artifacts.
+.meta_key
+.sarvam_key

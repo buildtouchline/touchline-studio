@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17131e">
+<link rel="icon" type="image/png" href="/web/vikzar-icon.png">
+<title>Touchline — Match review</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<div class="app-layout">
+  <header class="app-header">
+    <div class="header-identity">
+      <img class="brand-mark" src="/web/vikzar-icon.png" alt="Vikzar logo" width="34" height="34">
+      <div class="brand-wordmark"><strong>TOUCHLINE</strong><small>BY VIKZAR</small></div>
+    </div>
+    <nav class="primary-nav" aria-label="Primary navigation">
+      <button type="button" id="navOverview" class="nav-item">Dashboard</button>
+      <button type="button" id="navTeams" class="nav-item">Teams & players</button>
+      <button type="button" id="navLibrary" class="nav-item active" aria-current="page">Sessions</button>
+      <button type="button" id="navWorkspace" class="nav-item">Analysis</button>
+      <button type="button" id="navDevelopment" class="nav-item">Development</button>
+      <button type="button" id="navReports" class="nav-item">Reports</button>
+    </nav>
+    <div class="header-actions">
+      <span class="header-context">FOOTBALL INTELLIGENCE <span aria-hidden="true">/</span> REVIEW DESK</span>
+      <button type="button" id="btnUploadModal" class="btn-header primary"><span aria-hidden="true">＋</span> Upload availability</button>
+    </div>
+  </header>
+  <div id="demoRibbon" class="demo-ribbon" hidden><strong>SYNTHETIC DEMO</strong><span>Two short fixture sessions. No uploaded footage is analysed here; player labels and observations are examples.</span><button id="btnDemoStart" type="button">Open Session 1</button><button id="btnResetDemo" type="button">Reset demo</button></div>
+  <section id="jobBanner" class="job-banner" role="status" aria-live="polite" hidden><div><strong id="jobTitle">Analysis job</strong><p id="jobMessage">Waiting for status…</p><progress id="jobProgress" max="100" value="0" hidden></progress></div><div class="job-actions"><button id="btnJobOpen" type="button" class="btn-ctrl" hidden>Open run</button><button id="btnJobRetry" type="button" class="btn-ctrl" hidden>Check status</button><button id="btnJobDismiss" type="button" class="btn-ctrl">Dismiss</button></div></section>
+
+  <main id="overviewView" class="overview-view" hidden>
+    <div class="overview-inner">
+      <p class="eyebrow">COACH / WORKSPACE</p>
+      <div class="overview-heading"><div><h1>Your touchline<span class="accent-dot">.</span></h1><p>Start with the film. Review evidence before naming players or sharing a report.</p></div><button type="button" id="btnOverviewSessions" class="btn-ctrl primary">Open session library →</button></div>
+      <div class="overview-facts" aria-label="Available workspace data"><div><span>Sessions available</span><strong id="overviewSessionCount">—</strong></div><div><span>Source videos ready</span><strong id="overviewVideoCount">—</strong></div><div><span>Development work</span><strong id="overviewDraftStatus">No local draft</strong></div></div>
+      <div class="overview-grid"><section aria-labelledby="recentSessionsTitle"><div class="section-heading"><span class="section-index">A</span><h2 id="recentSessionsTitle">Recent footage</h2></div><div id="overviewSessionList" class="overview-list" role="status">Loading sessions…</div></section><section class="overview-boundaries" aria-labelledby="schoolWorkspaceTitle"><div class="section-heading"><span class="section-index">B</span><h2 id="schoolWorkspaceTitle">School workspace</h2></div><div class="overview-empty"><strong>Teams and roster</strong><p>Not connected. This Studio server does not provide school, team, lineup or player-profile APIs. Track IDs in footage are provisional.</p></div><div class="overview-empty"><strong>Reports and parent approval</strong><p>Not available. A coach approval record, child-specific access rules and immutable report revisions must exist before any report can be shared.</p></div></section></div>
+    </div>
+  </main>
+
+  <main id="teamsView" class="product-view" hidden><div class="product-inner"><p class="eyebrow">COACH / ROSTER</p><h1>Teams & players<span class="accent-dot">.</span></h1><p class="product-lead">Select a player, then open their session evidence. Temporary tracks remain separate from identity.</p><div id="teamsContent" class="product-grid" role="status"></div></div></main>
+
+  <main id="libraryView" class="library-view">
+    <div class="library-inner">
+      <section class="library-intro" aria-labelledby="libraryTitle">
+        <p class="eyebrow">01 / SESSION LIBRARY</p>
+        <div class="library-intro-line">
+          <div><h1 id="libraryTitle">The review desk<span class="accent-dot">.</span></h1><p>Open a recording to inspect the film, observations and coach commentary in context.</p></div>
+          <span id="libraryCount" class="library-counter" aria-live="polite">— SESSIONS</span>
+        </div>
+      </section>
+      <section class="library-section" aria-label="Available sessions">
+        <div class="library-toolbar">
+          <div class="library-toolbar-title"><span class="section-index">A</span><h2>Available film</h2></div>
+          <div class="library-toolbar-actions">
+            <label class="sr-only" for="librarySearch">Search sessions</label>
+            <input id="librarySearch" type="search" placeholder="Search sessions" autocomplete="off">
+            <button type="button" id="btnRetrySessions" class="btn-text">Refresh <span aria-hidden="true">↻</span></button>
+          </div>
+        </div>
+        <div class="library-columns" aria-hidden="true"><span>SESSION / SOURCE</span><span>VIDEO</span><span>DURATION</span><span>TRACKS</span><span></span></div>
+        <div id="libraryList" class="library-list" aria-live="polite"></div>
+        <div id="libraryState" class="library-state" role="status" hidden></div>
+      </section>
+      <footer class="library-footnote"><span>TOUCHLINE / REVIEW</span><span>Track IDs are provisional. Physical metrics require independently checked calibration.</span></footer>
+    </div>
+  </main>
+
+  <main id="analysisView" class="product-view" hidden><div class="product-inner">
+    <p class="eyebrow">COACH / ANALYSIS</p><h1>Review the evidence<span class="accent-dot">.</span></h1>
+    <p class="product-lead">Follow processing jobs and open available runs. A partial run covers only the frames reported by its manifest; temporary tracks do not establish player identity.</p>
+    <div class="analysis-toolbar"><span id="analysisCount" class="library-counter" aria-live="polite">— RUNS</span><div><button id="btnAnalysisRefresh" type="button" class="btn-ctrl">Refresh runs</button><button id="btnAnalysisSessions" type="button" class="btn-ctrl">Sessions</button><button id="btnAnalysisDashboard" type="button" class="btn-ctrl">Dashboard</button></div></div>
+    <div id="analysisState" class="analysis-state" role="status"></div><div id="analysisRunList" class="product-grid" aria-live="polite"></div>
+  </div></main>
+
+  <main id="developmentView" class="product-view" hidden><div class="product-inner"><p class="eyebrow">PLAYER / DEVELOPMENT</p><h1>From instruction to reassessment<span class="accent-dot">.</span></h1><p class="product-lead">One coach objective, two video moments, a coach-confirmed outcome. Browser-local drafts are not approved reports.</p><div id="developmentOverview" class="product-grid" role="status"></div></div></main>
+  <main id="reportsView" class="product-view" hidden><div class="product-inner"><p class="eyebrow">COACH / REPORTS</p><h1>Evidence before conclusions<span class="accent-dot">.</span></h1><p class="product-lead">A report can contain only linked source moments and a coach-confirmed assessment.</p><div id="reportsContent" class="product-grid" role="status"></div></div></main>
+
+  <div id="workspaceView" class="workspace-view" hidden>
+    <div class="workspace-heading">
+      <div class="workspace-heading-main">
+        <button type="button" id="btnBackLibrary" class="back-link" aria-label="Back to session library">← <span>Sessions</span></button>
+        <span class="heading-separator" aria-hidden="true"></span>
+        <div><p class="eyebrow">02 / ANALYSIS WORKSPACE</p><h1 id="sessionTitle">Select a session</h1><p id="sessionMeta" class="muted">—</p></div>
+      </div>
+      <div class="workspace-heading-side"><span id="runStatus" class="state-pill">No run</span><span id="calBadge" class="status-badge">Calibration unavailable</span></div>
+    </div>
+    <div id="sessionAlert" class="notice" role="status" hidden></div>
+    <ol class="coach-journey" aria-label="Recording to coach review workflow">
+      <li><strong>01</strong><span>Select recording</span></li><li><strong>02</strong><span>Analyse</span></li><li><strong>03</strong><span>Review evidence</span></li><li><strong>04</strong><span>Review identity</span></li><li><strong>05</strong><span>Save correction</span></li>
+    </ol>
+    <div class="workspace-split">
+      <div class="video-stage-column">
+        <div class="video-frame">
+          <div class="video-frame-top"><span>SESSION FILM</span><span id="frameReadout">SOURCE PIXELS / OBSERVATIONS</span></div>
+          <div class="video-container">
+            <video id="matchVideo" playsinline preload="metadata" aria-label="Session video"></video>
+            <canvas id="overlayCanvas" aria-label="Player observation overlay"></canvas>
+            <div id="fixtureVideoPlaceholder" class="fixture-video-placeholder" hidden><div class="pitch-illustration" aria-hidden="true"><span class="pitch-centre"></span></div><div class="fixture-placeholder-copy"><span class="fixture-kicker">TOUCHLINE / DEMO MODE</span><h2>Demo fixture – no match footage uploaded.</h2><p>These sessions contain synthetic observations for interface testing. Open the test pattern only when reviewing the QA fixture.</p><button type="button" id="btnOpenFixtureVideo" class="btn-ctrl primary">Open synthetic test pattern</button></div></div>
+            <div id="videoStatus" class="video-status" role="status">Select a session with a source video.</div>
+            <div id="videoSubtitlesOverlay" class="video-subtitles-overlay"><span class="subtitle-kicker">COACH AUDIO</span><span id="subtitleText"></span></div>
+          </div>
+        </div>
+        <div id="transportDeck" class="transport-deck">
+          <div class="transport-row">
+            <button type="button" id="btnPlayPause" class="btn-play" aria-label="Play or pause video">Play</button>
+            <button type="button" id="btnStepBack" class="btn-ctrl" title="Previous sampled observation frame" aria-label="Previous sampled observation frame">− Frame</button>
+            <button type="button" id="btnStepFwd" class="btn-ctrl" title="Next sampled observation frame" aria-label="Next sampled observation frame">+ Frame</button>
+            <div class="timeline-wrap"><input type="range" id="videoSlider" class="scrubber-slider" min="0" max="0" value="0" step="0.01" aria-label="Seek video"><div id="timelineMarkers" class="timeline-markers" aria-label="Coaching cue markers"></div></div>
+            <div id="timeDisplay" class="time-display">00:00.0 / —</div>
+          </div>
+          <div class="toggles-row">
+            <span class="control-caption">OVERLAYS</span>
+            <label><input type="checkbox" id="chkBoxes" checked> Boxes</label>
+            <label><input type="checkbox" id="chkTags" checked> IDs</label>
+            <label><input type="checkbox" id="chkTrails" checked> Trails</label>
+            <label><input type="checkbox" id="chkSubsOverlay" checked> Coach words</label>
+            <span class="control-spacer"></span>
+            <label><input type="checkbox" id="chkLoop" checked> Loop</label>
+            <label class="sr-only" for="speedSelect">Playback speed</label>
+            <select id="speedSelect" class="session-select compact" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1.0" selected>1×</option><option value="1.5">1.5×</option><option value="2.0">2×</option></select>
+          </div>
+        </div>
+        <div id="coverageNotice" class="notice" role="status" hidden></div>
+        <section class="recording-review" aria-labelledby="recordingReviewTitle">
+          <div class="section-heading"><span class="section-index">A</span><h2 id="recordingReviewTitle">What is ready to review</h2><span>THIS SESSION</span></div>
+          <div id="recordingArtifacts" class="recording-artifacts"></div>
+          <div id="recordingReviewAction" class="recording-review-action"></div>
+          <details class="run-provenance"><summary>Technical details / Run provenance</summary><div id="recordingProvenance" class="recording-provenance" role="status">Open a run to inspect its available provenance and evidence.</div></details>
+          <details class="planned-capabilities" open><summary>Coming to analysis <span class="planned-label">Planned</span></summary><div id="plannedCapabilities" class="planned-list"></div></details>
+        </section>
+        <section class="evidence-section" aria-label="Session evidence">
+          <div class="section-heading"><span class="section-index">B</span><h2>Evidence at a glance</h2><span>FROM THIS RUN</span></div>
+          <div class="analytics-strip">
+            <div><span class="metric-label">Loaded observations</span><strong id="statObservations">—</strong></div>
+            <div><span class="metric-label">Local tracks</span><strong id="statTracks">—</strong></div>
+            <div><span class="metric-label">Local player associations</span><strong id="statConfirmed">—</strong></div>
+            <div><span class="metric-label">Physical metrics</span><strong id="statPhysical">Unverified</strong></div>
+          </div>
+        </section>
+        <section class="coach-section" aria-label="Coach audio">
+          <div class="section-heading"><span class="section-index">C</span><h2>Coach audio</h2><span>RECORD → UPLOAD → REVIEW</span></div>
+          <div class="coach-strip">
+            <div class="coach-strip-left">
+              <label class="sr-only" for="micInputSelect">Microphone input</label>
+              <select id="micInputSelect" class="session-select mic-select"><option value="">Default microphone</option></select>
+              <button type="button" id="btnRefreshDevices" class="btn-ctrl" title="Refresh microphone list">Devices</button>
+              <button type="button" id="btnRecordMic" class="btn-record"><span class="record-dot" aria-hidden="true"></span> Record collar mic</button>
+              <span id="recordElapsed" class="mono">00:00</span>
+              <button type="button" id="btnAddManualSubtitle" class="btn-ctrl">Add cue</button>
+              <button type="button" id="btnAddMarker" class="btn-ctrl">Mark moment</button>
+            </div>
+            <div id="micStatusLabel" class="mic-status-text" role="status">Recording starts video playback; stopping uploads the finished audio for transcription.</div>
+          </div>
+          <div id="audioReview" class="audio-review" hidden><audio id="audioPreview" controls aria-label="Recorded coach audio preview"></audio><button type="button" id="btnUploadAudio" class="btn-ctrl primary">Upload for transcription</button><button type="button" id="btnDiscardAudio" class="btn-ctrl">Discard</button></div>
+        </section>
+        <section class="development-section" aria-labelledby="developmentTitle">
+          <div class="section-heading"><span class="section-index">D</span><h2 id="developmentTitle">Player development</h2><span>COACH DRAFT</span></div>
+          <p class="development-limit">This demo draft is saved only in this browser and can be cleared with Discard. It is not an authenticated Touchline record or shared with a parent. Avoid entering sensitive child information on shared devices. Matching local labels across runs do not verify identity.</p>
+          <div class="development-form">
+            <label for="developmentPlayer">Locally associated player</label><select id="developmentPlayer" class="session-select"><option value="">No local player association selected</option></select>
+            <label for="developmentFocus">Coaching correction</label><input id="developmentFocus" type="text" maxlength="180" placeholder="E.g. check shoulder before receiving">
+            <label for="developmentCheck">What will the coach look for?</label><input id="developmentCheck" type="text" maxlength="240" placeholder="An observable behaviour in both clips">
+            <button type="button" id="btnCreateCorrection" class="btn-ctrl primary">Link current moment as first evidence</button>
+          </div>
+          <div id="developmentDraft" class="development-draft" role="status">No local correction draft. Open a run with a coach-labelled association to begin.</div>
+          <div id="developmentComparison" class="development-draft" role="status" hidden></div>
+          <div class="development-actions"><button type="button" id="btnAddFollowup" class="btn-ctrl" disabled>Add current moment as follow-up</button><button type="button" id="btnDiscardCorrection" class="btn-ctrl" disabled>Discard draft</button></div>
+          <label for="developmentOutcome" class="development-assessment-label">Coach-confirmed outcome</label><select id="developmentOutcome" class="session-select" disabled><option value="">Choose after reviewing both moments</option><option value="achieved">Achieved</option><option value="partially_achieved">Partially achieved</option><option value="still_a_focus">Still a focus</option><option value="insufficient_evidence">Insufficient evidence</option></select>
+          <label for="developmentAssessment" class="development-assessment-label">Coach assessment after reviewing both moments</label><textarea id="developmentAssessment" rows="3" maxlength="1200" placeholder="Describe only what the selected evidence supports" disabled></textarea>
+          <div class="development-actions"><button type="button" id="btnSaveAssessment" class="btn-ctrl" disabled>Record assessment</button><button type="button" id="btnExportCorrection" class="btn-ctrl" disabled>Export draft (.json)</button></div>
+          <p id="developmentStatus" class="muted" role="status"></p>
+        </section>
+      </div>
+      <aside class="sidebar-column" aria-label="Analysis inspector">
+        <div class="inspector-heading"><p class="eyebrow">INSPECTOR / RUN EVIDENCE</p><h2>On the timeline</h2></div>
+        <div id="fixtureInspectorPlaceholder" class="fixture-inspector-empty" hidden><strong>No match evidence to inspect</strong><p>Open a recording to review its timeline, or explicitly open the synthetic QA test pattern.</p></div>
+        <div class="sidebar-tabs" role="tablist" aria-label="Run evidence"><button type="button" role="tab" id="cueTab" aria-controls="tabSubtitles" class="tab-item active" data-tab="tabSubtitles" aria-selected="true" tabindex="0">Coach cues <span id="subsCount">0</span></button><button type="button" role="tab" id="trackTab" aria-controls="tabPlayers" class="tab-item" data-tab="tabPlayers" aria-selected="false" tabindex="-1">Tracks <span id="playerCount">0</span></button><button type="button" role="tab" id="timelineTab" aria-controls="tabTimeline" class="tab-item" data-tab="tabTimeline" aria-selected="false" tabindex="-1">Timeline <span id="timelineCount">0</span></button></div>
+        <div id="tabSubtitles" role="tabpanel" aria-labelledby="cueTab" class="sidebar-scroll"><div class="panel-intro">Words are linked to video time. Speaker labels still need review.</div><div id="subtitlesList" class="card-list"></div></div>
+        <div id="tabPlayers" role="tabpanel" aria-labelledby="trackTab" class="sidebar-scroll" style="display:none;"><div id="selectedTrackInfo" class="selected-track-info">Select a track to inspect its available observations.</div><div id="playersList" class="card-list"></div></div>
+        <div id="tabTimeline" role="tabpanel" aria-labelledby="timelineTab" class="sidebar-scroll" style="display:none;"><div class="panel-intro">Video-relative coach cues and local markers. Other event types appear only when supplied as evidence.</div><div id="timelineList" class="card-list"></div></div>
+        <div class="inspector-footer"><label class="sr-only" for="sessionSelect">Switch review session</label><select id="sessionSelect" class="session-select" title="Switch review session"><option value="">Loading sessions…</option></select><label class="sr-only" for="headerLangSelect">Transcription language</label><select id="headerLangSelect" class="session-select compact" title="Transcription language"><option value="en-IN" selected>English (IN)</option><option value="hi-IN">Hindi (IN)</option><option value="ta-IN">Tamil (IN)</option><option value="te-IN">Telugu (IN)</option><option value="kn-IN">Kannada (IN)</option><option value="ml-IN">Malayalam (IN)</option></select><label class="sr-only" for="exportDropdown">Export</label><select id="exportDropdown" class="session-select compact" title="Available exports"><option value="" selected>Export…</option><option value="clean_video">Source video (.mp4)</option><option value="srt">Transcript (.srt)</option><option value="vtt">Transcript (.vtt)</option><option value="json">Loaded session data (.json)</option><option value="markers">Local markers (.json)</option></select></div>
+      </aside>
+    </div>
+  </div>
+</div>
+
+<div id="uploadModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="uploadTitle"><div class="modal-box"><p class="eyebrow">NEW SESSION / PIXEL SPACE</p><h3 id="uploadTitle">Full-recording upload availability</h3><form id="uploadForm"><div class="form-group"><label for="uploadFileInput">MP4 file</label><input type="file" id="uploadFileInput" accept="video/mp4,video/*" required></div><p class="modal-help">The authenticated backend job API and durable video storage are not deployed. This local Studio can review existing run artifacts but cannot accept a new full-recording upload. Physical measurements also require independently checked calibration.</p><div class="form-group"><label for="uploadFramesSelect">Selected-frame limit</label><select id="uploadFramesSelect"><option value="15">15 selected frames</option><option value="30" selected>30 selected frames</option><option value="50">50 selected frames</option></select><p class="muted">A frame limit produces a partial analysis, not coverage of the whole clip.</p></div><div id="uploadStatusText" class="operation-status" hidden>Upload unavailable</div><div class="modal-actions"><button type="button" id="btnCancelUpload" class="btn-ctrl">Cancel</button><button type="submit" id="btnSubmitUpload" class="btn-ctrl primary">Start analysis <span aria-hidden="true">→</span></button></div></form></div></div>
+<div id="subtitleModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modalSubTitle"><div class="modal-box"><p class="eyebrow">TIMELINE / COACH CUE</p><h3 id="modalSubTitle">Add coach words</h3><div class="form-group"><label for="subStartInput">Video time range (seconds)</label><div class="time-inputs"><input type="number" id="subStartInput" step="0.01" min="0" placeholder="Start"><input type="number" id="subEndInput" step="0.01" min="0" placeholder="End"><button type="button" id="btnSyncTime" class="btn-ctrl" title="Set to current video frame">Use current</button></div></div><div class="form-group"><label for="subLangSelect">Language</label><select id="subLangSelect"><option value="en-IN" selected>English (en-IN)</option><option value="hi-IN">Hindi (hi-IN)</option><option value="ta-IN">Tamil (ta-IN)</option><option value="te-IN">Telugu (te-IN)</option><option value="kn-IN">Kannada (kn-IN)</option><option value="ml-IN">Malayalam (ml-IN)</option></select></div><div class="form-group"><label for="subTextInput">Coach words or tactical note</label><textarea id="subTextInput" rows="4" placeholder="Enter the coach's words or a tactical note…"></textarea></div><p id="saveStatus" class="muted" role="status"></p><div class="modal-actions"><button type="button" id="btnCancelSubModal" class="btn-ctrl">Cancel</button><button type="button" id="btnSaveSubModal" class="btn-ctrl primary">Save cue <span aria-hidden="true">→</span></button></div></div></div>
+<div id="markerModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="markerTitle"><div class="modal-box"><p class="eyebrow">SESSION / LOCAL MARKER</p><h3 id="markerTitle">Mark a video moment</h3><p class="modal-help">This marker is stored only in this browser for this run. Export local markers before changing devices or clearing browser storage.</p><div class="form-group"><label for="markerTime">Video time (seconds)</label><input type="number" id="markerTime" min="0" step="0.01"></div><div class="form-group"><label for="markerLabel">Coach note</label><textarea id="markerLabel" rows="3" maxlength="500" placeholder="What should you review at this moment?"></textarea></div><p id="markerStatus" class="muted" role="status"></p><div class="modal-actions"><button type="button" id="btnCancelMarker" class="btn-ctrl">Cancel</button><button type="button" id="btnSaveMarker" class="btn-ctrl primary">Save local marker</button></div></div></div>
+<div id="toastHost" role="status" aria-live="polite"></div>
+<script src="/web/timeline.js"></script>
+<script src="/web/development.js"></script>
+<script src="/web/development-storage.js"></script>
+<script src="/web/request.js"></script>
+<script src="/web/player-development-api.js"></script>
+<script src="/web/upload.js"></script>
+<script src="/web/api-client.js"></script>
+<script src="/app.js"></script>
+</body>
+</html>
