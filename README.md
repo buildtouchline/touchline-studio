@@ -1,37 +1,75 @@
-Copyright (c) 2026 Team Vikzar. All rights reserved. This is a private Team Vikzar repository. No permission is granted to copy, modify, distribute, or use this software outside Team Vikzar's authorisation.
+Copyright (c) 2026 Team Vikzar. All rights reserved. This repository is made public solely for hackathon submission and judging purposes. No permission is granted to copy, modify, distribute, or use this software for any other purpose, commercial or non-commercial.
 
 # Touchline Studio
 
-Touchline Studio is Team Vikzar's football video review and coach workspace. This repository is a **clean source snapshot** of the reviewed local remediation commit, with a fresh Git history. It is not evidence that a live Panorama/ResNet Modal run or production player-identity workflow has passed.
+Touchline Studio is a football video-review workspace for coaches and academies. It connects a recording to timestamped observations, temporary player tracks, coach review, and later corrections. The goal is to let a coach inspect evidence before associating a track with a player or drawing a development conclusion.
 
-## Start locally
+This public repository contains source code, tests and technical documentation. It contains **no match recording, model checkpoint, trained weight, credential or completed analysis export**. Public visibility permits Meta Global AI Developer Hackathon evaluation; it is not an open-source licence.
 
-Python 3.12 or newer is required. Create an isolated environment and install only the extras needed for your task:
+## What is implemented
+
+The browser workspace is plain HTML, CSS and JavaScript under [`src/touchline/web/`](src/touchline/web/). Its API client separates explicit synthetic demo, local Studio, and configured authenticated production modes; production requests do not silently fall back to fixtures. The Python [`Studio server`](src/touchline/studio.py) serves the workspace, accepts bounded local MP4 uploads when readiness checks pass, stores file-backed jobs and runs, and offers run, observation, artifact and correction routes. It is **not** a complete multi-tenant production backend.
+
+For the selected Panorama/ResNet path, the [`worker adapter`](src/touchline/adapters/panorama_worker.py) probes a fresh source MP4, checks its SHA-256, runs [timestamp-based normalization](src/touchline/video/normalize.py), records a source-to-normalized [frame map](src/touchline/panorama_import.py), verifies separate input and code hashes, and prepares a bounded [Modal Sandbox worker](tools/modal_panorama_worker.py) job. The worker uses a pinned Faster R-CNN ResNet50-FPN-v2 checkpoint contract. Completed exports can be checked and converted to canonical observations and a local run bundle. Coach review can create a separate child run while leaving the parent evidence unchanged; file-backed child runs are **not tamper-proof storage**.
+
+```text
+Coach workspace → local Studio API and job state → validated source and 24 fps copy
+  → bounded Panorama/ResNet Sandbox adapter → verified exported artifacts
+  → file-backed run and observations → coach evidence review and child correction
+```
+
+The full sequence above has passed an **offline mocked-Sandbox test with a fresh MP4 fixture**. A fresh browser-to-live-Modal-to-coach run has **not** been verified. The historical four-minute export and tracking results are review evidence, not production acceptance or a validated player-identity result.
+
+## Local setup
+
+Use Python **3.12 or newer**. From the repository root on macOS or Linux:
 
 ```sh
 python3.12 -m venv .venv
-.venv/bin/python -m pip install -e '.[vision]'
-.venv/bin/python -m touchline studio --port 8765
+. .venv/bin/activate
+python -m pip install -e '.[vision]'
+python -m touchline studio --runs-dir ./runs --port 8765
 ```
 
-Open `http://127.0.0.1:8765/`. Studio is a local review server. Without a verified checkpoint, source bundle, spending authorisation and Modal runtime, real Panorama upload readiness remains closed. For an explicit **synthetic QA** preview, use:
+Open `http://127.0.0.1:8765/`. The local server and workspace can open without a Modal account. **Real Panorama upload readiness remains closed** until its checkpoint, approved code bundle, compatible runtime, deployment probe, stationary-camera approval, access controls and spending ledger are supplied. Do not place secrets in browser assets or commit them. The default Studio server is for loopback development, not public hosting.
+
+No frontend build is needed; the current client is served directly. To inspect the **explicit synthetic QA fixture**, start its separate local server and open `http://127.0.0.1:8766/`:
 
 ```sh
-python3 -B src/touchline/web/qa/serve.py --port 8766
+python -B src/touchline/web/qa/serve.py --port 8766
 ```
 
-Synthetic observations and temporary track IDs are not verified player identities. Physical measurements require independently validated calibration. See [Panorama remediation status](docs/PANORAMA_STUDIO_REMEDIATION.md), [integration architecture](docs/TOUCHLINE_PANORAMA_INTEGRATION.md), and [migration provenance](MIGRATION_PROVENANCE.md).
+The fixture is labelled as synthetic. Its test video and observations are not footage or model results from a football match.
 
-## Offline checks
+## Offline verification
+
+After installing the vision extra, run the focused fresh-MP4 mock, importer and normalizer tests:
 
 ```sh
-.venv/bin/python -B tools/run_offline_checks.py
-.venv/bin/python -B tools/run_offline_checks.py artifacts
+PYTHONPATH=src:tests python -B -m unittest test_panorama_backend_orchestration test_panorama_import test_video_normalize -q
 node --test src/touchline/web/*.test.cjs
+node --check src/touchline/web/app.js
+python -B tools/run_offline_checks.py artifacts
 ```
 
-Some offline tests require additional optional dependencies, including Torch. Test failures and skips must be reported separately. Tests with a mock Sandbox do not establish a live Modal result.
+The broader suite is `python -B tools/run_offline_checks.py`. Some tests need additional optional packages, including Torch/Torchvision, SciPy and OpenCV; report missing-dependency errors separately from code failures. These commands do not launch Modal or process a private recording.
 
-## Acknowledgements
+## Status and limits
 
-Touchline is collaborative Team Vikzar work. The backend, Coach Studio, Panorama/ResNet worker, and model components were integrated. **Jai Vinush (`jv-013`)** prepared this reviewed integration snapshot and remediation. The single initial commit records the migration; it does not claim that its committer individually authored every component. Component provenance remains available in the archived source repository.
+| Capability | Current status |
+| --- | --- |
+| Coach workspace, local run browsing, video timeline and evidence presentation | Implemented; local and synthetic paths tested |
+| Fresh MP4 preparation, frame map, distinct original/normalized hashes, export conversion and restart reopening | Tested with a small fixture and mocked Sandbox |
+| Panorama/ResNet worker and pinned checkpoint contract | Source present; checkpoint bytes and deployed image are not in this repository |
+| Live Modal GPU execution from Studio | Gated and **not verified** for a fresh recording |
+| Production authentication, roster authorization and durable cloud storage | Integration boundaries exist; a complete production service is not verified |
+| Temporary track review and separate correction child runs | Local file-backed workflow; roster identity requires trusted review; storage is not tamper-proof |
+| Tactical minimap, MOTChallenge export, jersey recognition, validated speed/distance, automatic retraining, coach voice commentary and advanced scoring | Planned or separately experimental; not presented as verified recording outputs |
+
+Detections and temporary track IDs do not prove a player's identity. Pixel movement is not validated distance or speed. Coach assessments and synthetic examples must not be presented as measured improvement. A historical export's detection quality does not establish tracking or identity accuracy. Camera motion, incorrect geometry or timing, corrupt video, missing lineage, and incomplete worker outputs can invalidate a run.
+
+Live execution requires the exact approved checkpoint and source bundle, a compatible Modal SDK/image and access, a qualifying stationary panorama, trusted server-side authorization, and an explicit bounded spending approval. See [remediation status](docs/PANORAMA_STUDIO_REMEDIATION.md), [integration architecture](docs/TOUCHLINE_PANORAMA_INTEGRATION.md), [review gates](docs/REVIEW_GATES.md), and [snapshot provenance](MIGRATION_PROVENANCE.md). Other dated documents in `docs/` preserve engineering context; their historical plans and test counts are not current product claims.
+
+## Acknowledgements and provenance
+
+Touchline is collaborative Team Vikzar work. The backend, Coach Studio, Panorama/ResNet worker, and model components were integrated. **Jai Vinush (`jv-013`)** prepared the reviewed integration snapshot and remediation. The initial snapshot commit records migration into this repository; it does not claim that its committer individually authored every component. The [archived Touchline repository](https://github.com/buildtouchline/touchline) retains historical commits and attribution. Dataset access conditions and third-party notices cited in the technical documents remain applicable.
