@@ -316,10 +316,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-vis
 .meta-activity-text { max-width:70ch; color:var(--ink)!important; font-size:13px!important; line-height:1.6; }
 .meta-frame-view { position:relative; width:min(100%,720px); margin-top:14px; background:#111; overflow:hidden; }
 .meta-frame-view img { display:block; width:100%; height:auto; }
+.meta-frame-unavailable { margin:0; padding:14px 16px; color:#c7c2c8; border:1px solid #4d484d; line-height:1.5; }
 .meta-frame-box { position:absolute; border:1.5px solid #b9e8e2; box-shadow:0 0 0 1px rgba(0,0,0,.6); pointer-events:none; }
 .meta-activity-card details { margin:10px 0; color:var(--ink-muted); font-size:11px; }
 .meta-activity-card details summary { cursor:pointer; }
 .meta-activity-review { display:flex; gap:10px; flex-wrap:wrap; margin-top:12px; color:var(--mineral); font-size:11px; }
+.meta-activity-review label { width:100%; display:grid; gap:6px; color:var(--ink-muted); }
+.meta-activity-review textarea { width:100%; min-height:68px; background:var(--surface); color:var(--ink); border:1px solid var(--line); padding:9px; font:12px/1.5 var(--font-body); }
+.meta-structured-output { display:grid; grid-template-columns:minmax(130px,190px) minmax(0,1fr); gap:5px 12px; max-width:70ch; font-size:12px; line-height:1.5; }
+.meta-structured-output dt { color:var(--mineral); }.meta-structured-output dd { margin:0; color:var(--ink); }
+.meta-activity-origin { color:var(--rose)!important; }
+.meta-activity-lifecycle { color:var(--mineral)!important; font-size:11px!important; }
 .meta-activity-error { color:var(--rose)!important; }
 @media (max-width:560px) { .meta-activity-section { padding:17px; }.meta-activity-controls { align-items:stretch; flex-direction:column; }.meta-activity-controls button,.meta-activity-controls select { width:100%; } }
 .recording-artifacts { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:0; margin:18px 0; }

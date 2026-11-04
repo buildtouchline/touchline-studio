@@ -17,7 +17,6 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import hmac
-import hashlib
 import json
 import math
 import os
@@ -55,7 +54,7 @@ from .diagnostics import diagnostic_session, diagnostic_span, record_failure, cu
 from functools import wraps
 from .video.sampling import FixedRateSampler
 from .viewer import render_inspection_dashboard
-from .meta_activity import MODELS as META_MODELS, execute_activity, list_activities, new_activity, save_activity, source_frame
+from .meta_activity import execute_activity, execute_voice_activity, list_activities, new_activity, save_activity, verified_activity_frame
 
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 _MAX_UPLOAD_BYTES = 1024 * 1024 * 1024  # 1 GiB bounded streaming upload
@@ -639,10 +638,8 @@ def run_studio_server(
                     self._json(404, {})
                     return
                 try:
-                    jpeg, _ = source_frame(rdir / "source_video.mp4", record["requested_time_s"])
-                    if hashlib.sha256(jpeg).hexdigest() != record["frame_sha256"]:
-                        raise ValueError("Frame lineage changed")
-                except (OSError, ValueError, RuntimeError):
+                    jpeg = verified_activity_frame(rdir, record)
+                except (ImportError, OSError, ValueError, RuntimeError):
                     self._json(409, {})
                     return
                 self.send_response(200)
@@ -662,7 +659,7 @@ def run_studio_server(
                     self._json(404, {})
                     return
                 configured_limit = os.environ.get("TOUCHLINE_META_MAX_CALLS", "0")
-                limit = int(configured_limit) if configured_limit.isdigit() and 0 < int(configured_limit) <= 4 else 0
+                limit = int(configured_limit) if configured_limit.isdigit() and 0 < int(configured_limit) <= 8 else 0
                 used = sum(len(list_activities(folder)) for folder in runs_root.iterdir()
                            if folder.is_dir() and not folder.is_symlink() and (folder / "manifest.json").is_file())
                 self._json(200, {"run_id": rid, "activities": list_activities(rdir),
@@ -929,6 +926,52 @@ def run_studio_server(
 
             if not self._check_auth():
                 return
+            meta_audio_match = re.fullmatch(r"/api/runs?/([^/]+)/meta-audio", path)
+            if meta_audio_match:
+                rid = meta_audio_match.group(1)
+                if not self._check_run_access(rid, "write"):
+                    return
+                rdir = _find_run_dir(runs_root, rid)
+                if rdir is None:
+                    self._json(404, {})
+                    return
+                length_text = self.headers.get("Content-Length", "")
+                media_type = self.headers.get("Content-Type", "").split(";", 1)[0]
+                if not length_text.isdigit() or not 100 <= int(length_text) <= 8_000_000 or media_type not in (
+                        "audio/webm", "audio/ogg", "audio/mp4", "audio/wav", "audio/x-wav", "application/octet-stream"):
+                    self._json(400, {})
+                    return
+                try:
+                    anchor = float(urllib.parse.parse_qs(parsed.query).get("anchor_s", ["0"])[0])
+                except ValueError:
+                    self._json(400, {})
+                    return
+                if not math.isfinite(anchor) or anchor < 0:
+                    self._json(400, {})
+                    return
+                key = os.environ.get("MODEL_API_KEY") or os.environ.get("META_API_KEY")
+                configured_limit = os.environ.get("TOUCHLINE_META_MAX_CALLS", "0")
+                if not key or not configured_limit.isdigit() or not 0 < int(configured_limit) <= 8:
+                    self._json(503, {})
+                    return
+                with meta_activity_lock:
+                    used = sum(len(list_activities(folder)) for folder in runs_root.iterdir()
+                               if folder.is_dir() and not folder.is_symlink() and (folder / "manifest.json").is_file())
+                    attempts = sum(row.get("model_kind") == "voice" for row in list_activities(rdir))
+                    if used >= int(configured_limit) or attempts >= 2:
+                        self._json(429, {})
+                        return
+                    if any(row.get("model_kind") == "voice" and row.get("status") in ("submitted", "processing", "response_received")
+                           for row in list_activities(rdir)):
+                        self._json(409, {})
+                        return
+                    audio_bytes = self.rfile.read(int(length_text))
+                    record = new_activity(rid, "voice", anchor)
+                    save_activity(rdir, record)
+                threading.Thread(target=execute_voice_activity, args=(rdir, record, key, audio_bytes), daemon=True,
+                                 name="meta-coach-audio").start()
+                self._json(202, {"activity_id": record["activity_id"], "status": "submitted", "run_id": rid})
+                return
             meta_frame_match = re.fullmatch(r"/api/runs?/([^/]+)/meta-frame", path)
             meta_review_match = re.fullmatch(r"/api/runs?/([^/]+)/meta-activity/(meta-[0-9a-f]{32})/review", path)
             if meta_frame_match or meta_review_match:
@@ -940,7 +983,8 @@ def run_studio_server(
                     self._json(404, {})
                     return
                 length_text = self.headers.get("Content-Length", "")
-                if not length_text.isdigit() or not 0 < int(length_text) <= 2048 or self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":
+                max_body = 16_384 if meta_review_match else 2048
+                if not length_text.isdigit() or not 0 < int(length_text) <= max_body or self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":
                     self._json(400, {})
                     return
                 try:
@@ -957,19 +1001,73 @@ def run_studio_server(
                     if decision not in ("confirmed_observation", "rejected_observation"):
                         self._json(400, {})
                         return
+                    edited_text = body.get("edited_text")
+                    if edited_text is not None and (decision != "confirmed_observation" or not isinstance(edited_text, str)
+                                                   or not 1 <= len(edited_text.strip()) <= 12_000):
+                        self._json(400, {})
+                        return
                     with meta_activity_lock:
                         record = next((row for row in list_activities(rdir) if row["activity_id"] == activity_id), None)
                         if record is None or record["status"] != "response_received" or record.get("review") is not None:
                             self._json(409, {})
                             return
+                        if record.get("model_kind") == "voice" and decision == "confirmed_observation":
+                            if record.get("output_truncated") and not edited_text:
+                                self._json(409, {"error": "Transcript preview is incomplete; enter reviewed text before approval"})
+                                return
+                            anchor = record.get("requested_time_s")
+                            duration = record.get("audio_duration_s")
+                            if not isinstance(anchor, (int, float)) or not isinstance(duration, (int, float)):
+                                self._json(409, {})
+                                return
+                            approved_text = edited_text.strip() if edited_text else record["output_preview"]
+                            turns = record.get("turns") or []
+                            if edited_text or not turns:
+                                segments = [{"segment_id": "meta_voice_001", "text": approved_text,
+                                             "video_start_s": round(anchor, 3), "video_end_s": round(anchor + duration, 3),
+                                             "timing_provenance": "coach_edited_clip_extent" if edited_text else "audio_clip_extent",
+                                             "alignment_review_required": True, "speaker_verified": False}]
+                            else:
+                                segments = [{"segment_id": f"meta_voice_{index:03d}", "text": turn["transcript"],
+                                             "video_start_s": round(anchor + turn["startMs"] / 1000, 3),
+                                             "video_end_s": round(anchor + turn["endMs"] / 1000, 3),
+                                             "timing_provenance": "provider_turn_ms_plus_coach_anchor",
+                                             "alignment_review_required": True, "speaker_verified": False,
+                                             **({"speaker_label": turn["speaker"]} if turn.get("speaker") else {})}
+                                            for index, turn in enumerate(turns, 1)]
+                            incoming = {"schema_version": "touchline.transcript.v1", "provider": "meta_model_api",
+                                        "model": record["model"], "audio_duration_s": duration,
+                                        "alignment": {"video_anchor_start_s": anchor, "alignment_review_required": True},
+                                        "transcript_full": approved_text, "segments": segments, "manual_cues": [],
+                                        "created_at_utc": datetime.now(timezone.utc).isoformat()}
+                            tfile = _safe_path(rdir, "transcript.json")
+                            if tfile is None:
+                                self._json(409, {})
+                                return
+                            try:
+                                with _TRANSCRIPT_LOCK:
+                                    old = json.loads(tfile.read_text(encoding="utf-8")) if tfile.is_file() else {}
+                                    merged = append_transcript(old, incoming)
+                                    temporary = rdir / ("transcript-" + uuid.uuid4().hex + ".tmp")
+                                    temporary.write_text(json.dumps(merged, indent=2) + "\n", encoding="utf-8")
+                                    temporary.replace(tfile)
+                            except (OSError, ValueError, KeyError):
+                                self._json(409, {})
+                                return
+                            record["transcript_clip_id"] = merged["clips"][-1]["clip_id"]
                         record["review"] = {"decision": decision, "reviewed_at": datetime.now(timezone.utc).isoformat(),
-                                            "reviewer": reviewer_identity or "local_unauthenticated_coach"}
+                                            "reviewer": reviewer_identity or "local_unauthenticated_coach",
+                                            **({"edited_text": edited_text.strip()} if edited_text else {})}
                         save_activity(rdir, record)
                     self._json(200, record)
                     return
                 model_kind = body.get("model")
                 selected_time = body.get("timestamp_s")
-                if model_kind not in META_MODELS or type(selected_time) not in (int, float) or not math.isfinite(selected_time) or selected_time < 0:
+                objective = body.get("objective") if model_kind == "wonder" else None
+                if model_kind not in ("sam", "spark", "wonder") or type(selected_time) not in (int, float) or not math.isfinite(selected_time) or selected_time < 0:
+                    self._json(400, {})
+                    return
+                if model_kind == "wonder" and (not isinstance(objective, str) or not 3 <= len(objective.strip()) <= 280):
                     self._json(400, {})
                     return
                 if not (rdir / "source_video.mp4").is_file():
@@ -977,7 +1075,7 @@ def run_studio_server(
                     return
                 key = os.environ.get("MODEL_API_KEY") or os.environ.get("META_API_KEY")
                 configured_limit = os.environ.get("TOUCHLINE_META_MAX_CALLS", "0")
-                if not key or not configured_limit.isdigit() or not 0 < int(configured_limit) <= 4:
+                if not key or not configured_limit.isdigit() or not 0 < int(configured_limit) <= 8:
                     self._json(503, {})
                     return
                 with meta_activity_lock:
@@ -986,10 +1084,11 @@ def run_studio_server(
                     if used >= int(configured_limit):
                         self._json(429, {})
                         return
-                    if any(row.get("model_kind") == model_kind for row in list_activities(rdir)):
+                    attempts = [row for row in list_activities(rdir) if row.get("model_kind") == model_kind]
+                    if len(attempts) >= 2 or any(row.get("status") in ("submitted", "processing", "response_received") for row in attempts):
                         self._json(409, {})
                         return
-                    record = new_activity(rid, model_kind, selected_time)
+                    record = new_activity(rid, model_kind, selected_time, objective=objective)
                     save_activity(rdir, record)
                 threading.Thread(target=execute_activity, args=(rdir, record, key), daemon=True,
                                  name="meta-selected-frame").start()

@@ -8,13 +8,13 @@ const ui = Object.fromEntries([
   'jobBanner','jobTitle','jobMessage','jobProgress','btnJobOpen','btnJobRetry','btnJobDismiss',
   'btnOverviewSessions','overviewSessionCount','overviewVideoCount','overviewDraftStatus','overviewSessionList','libraryCount','libraryList',
   'libraryState','librarySearch','btnBackLibrary','frameReadout',
-  'sessionSelect','btnRetrySessions','calBadge','sessionTitle','sessionMeta','runStatus','sessionAlert','metaModelSelect','btnMetaFrame','metaActivityReadiness','metaActivityList',
+  'sessionSelect','btnRetrySessions','calBadge','sessionTitle','sessionMeta','runStatus','sessionAlert','metaModelSelect','metaObjective','metaObjectiveLabel','btnMetaFrame','metaActivityReadiness','metaActivityList',
   'matchVideo','overlayCanvas','videoStatus','videoSubtitlesOverlay','subtitleText','videoSlider','fixtureVideoPlaceholder','btnOpenFixtureVideo','transportDeck',
   'timelineMarkers','timeDisplay','btnPlayPause','btnStepBack','btnStepFwd','chkBoxes','chkTags',
   'chkTrails','chkSubsOverlay','chkLoop','speedSelect','headerLangSelect','exportDropdown',
   'statObservations','statTracks','statConfirmed','statPhysical','coverageNotice','recordingProvenance','recordingArtifacts','recordingReviewAction','plannedCapabilities','subtitlesList',
   'playersList','selectedTrackInfo','fixtureInspectorPlaceholder','subsCount','playerCount','micInputSelect','btnRefreshDevices',
-  'btnRecordMic','recordElapsed','micStatusLabel','audioReview','audioPreview','btnUploadAudio',
+  'btnRecordMic','recordElapsed','micStatusLabel','audioReview','audioPreview','audioFileInput','btnUploadAudio',
   'btnDiscardAudio','btnAddManualSubtitle','subtitleModal','modalSubTitle','subStartInput',
   'subEndInput','subTextInput','subLangSelect','saveStatus','btnSaveSubModal','btnCancelSubModal',
   'btnSyncTime','uploadModal','uploadForm','uploadFileInput','uploadFramesSelect','uploadStatusText',
@@ -106,26 +106,45 @@ function samBoxes(text){
 function renderMetaActivity(){
   const realRun=api.mode==='local'&&!state.demo&&state.id&&state.data?.video_url;
   const sourceAlignmentAvailable=state.mediaKind==='source'||Array.isArray(state.data?.frame_map)&&state.data.frame_map.length>1;
-  const modelUsed=state.metaActivities.some(item=>item.model_kind===ui.metaModelSelect.value);
-  const ready=realRun&&sourceAlignmentAvailable&&state.metaConfigured&&state.metaEnabled&&state.metaRemaining>0&&!modelUsed;
+  const attempts=state.metaActivities.filter(item=>item.model_kind===ui.metaModelSelect.value);
+  const modelUsed=attempts.length>=2||attempts.some(item=>['submitted','processing','response_received'].includes(item.status));
+  const objectiveReady=ui.metaModelSelect.value!=='wonder'||ui.metaObjective.value.trim().length>=3;
+  const ready=realRun&&sourceAlignmentAvailable&&state.metaConfigured&&state.metaEnabled&&state.metaRemaining>0&&!modelUsed&&objectiveReady;
   ui.btnMetaFrame.disabled=!ready;
   ui.metaActivityReadiness.textContent=state.metaError||(!realRun?'Open a real recording; synthetic fixtures cannot call Meta.':
     !sourceAlignmentAvailable?'Original frame time is unavailable; switch to source video or provide a verified frame map.':
     !state.metaConfigured?'Server-side Meta credential unavailable.':
     !state.metaEnabled||state.metaRemaining<=0?'Server-side Meta call allowance is closed.':
-    modelUsed?'This model was already requested for this run.':'Ready for one bounded selected-frame request.');
+    modelUsed?'This model has a result, is processing, or reached its two-attempt limit.':
+    !objectiveReady?'Enter a specific coach objective for Muse Wonder.':'Ready for one bounded selected-frame request.');
   ui.metaActivityList.replaceChildren();
   for(const activity of state.metaActivities){
     const card=document.createElement('article');card.className='meta-activity-card';
-    const title=document.createElement('h3');title.textContent=`${activity.model||'Meta model'} · ${String(activity.status||'unknown').replaceAll('_',' ')}`;
+    const friendly={sam:'SAM 3.1',spark:'Muse Spark',wonder:'Muse Wonder',voice:'Muse Voice Transcribe'}[activity.model_kind]||'Meta model';
+    const title=document.createElement('h3');title.textContent=`${friendly} · ${activity.model||'model ID unavailable'} · ${String(activity.status||'unknown').replaceAll('_',' ')}`;
     const details=document.createElement('p');details.textContent=`${activity.provider||'Meta Model API'} · ${activity.input_type||'source frame'} · ${Number.isFinite(activity.frame_time_s)?formatTime(activity.frame_time_s):formatTime(activity.requested_time_s)} · ${activity.latency_ms==null?'pending':`${activity.latency_ms} ms`}`;
-    const ids=document.createElement('small');ids.textContent=`Session ${activity.run_id||'—'} · Request ${activity.request_id||'pending'} · ${activity.runtime||'server'} · ${activity.submitted_at||'—'} → ${activity.responded_at||'pending'}${activity.response_model?` · Returned model ${activity.response_model}`:''}`;
+    const reference=activity.model_kind==='voice'?`Provider session ${activity.provider_session_id||activity.request_id||'not returned'}`:`Request ${activity.request_id||'not returned'}`;
+    const ids=document.createElement('small');ids.textContent=`Session ${activity.run_id||'—'} · ${reference} · ${activity.runtime||'server'} · ${activity.submitted_at||'—'} → ${activity.responded_at||'pending'}${activity.response_model?` · Returned model ${activity.response_model}`:''}`;
     card.append(title,details,ids);
+    const lifecycle=document.createElement('p');lifecycle.className='meta-activity-lifecycle';
+    lifecycle.textContent=activity.status==='response_received'?
+      `Provider ${activity.response_status||'response received'} · usable output parsed and displayed · ${activity.review?`coach ${activity.review.decision.replaceAll('_',' ')}`:'AI-generated proposal awaiting coach review'}`:
+      activity.status==='failed'?'Request failed; no reviewable model output was accepted.':
+      activity.status==='processing'?'Provider processing; no result has been accepted yet.':'Submitted; awaiting provider processing.';
+    card.append(lifecycle);
+    if(activity.model_kind==='voice'){
+      const origin=document.createElement('p');origin.className='meta-activity-origin';
+      origin.textContent=activity.input_origin==='locally_generated_test_audio'?'Input: locally generated spoken-audio test, not a coach recording.':
+        'Input: coach audio source has not been independently verified.';card.append(origin);
+    }
     if(activity.output_preview){
       const boxes=activity.model==='sam-3.1'?samBoxes(activity.output_preview):[];
       if(activity.frame_sha256){
         const frame=document.createElement('div');frame.className='meta-frame-view';
         const image=document.createElement('img');image.alt='Source video frame supplied to Meta; model geometry is overlaid when available';
+        image.addEventListener('error',()=>{const unavailable=document.createElement('p');unavailable.className='meta-frame-unavailable';
+          unavailable.textContent='Saved source-frame preview unavailable; its hash could not be verified in this runtime. Model text remains available for coach review.';
+          frame.replaceChildren(unavailable);});
         image.src=`${runUrl(activity.run_id)}/meta-activity/${encodeURIComponent(activity.activity_id)}/frame.jpg`;
         frame.append(image);
         for(const [index,box] of boxes.entries()){
@@ -137,15 +156,37 @@ function renderMetaActivity(){
         const summary=document.createElement('p');summary.textContent=`${boxes.length} visible person-box proposals from the returned segmentation text. Mask payloads are retained in the technical response; these are not confirmed players.`;card.append(summary);
         const raw=document.createElement('details');const label=document.createElement('summary');label.textContent='Technical Meta segmentation response';
         const output=document.createElement('pre');output.className='meta-activity-output';output.textContent=activity.output_preview;raw.append(label,output);card.append(raw);
+      }else if(activity.model_kind==='spark'){
+        let structured=null;try{structured=JSON.parse(activity.output_preview);}catch{}
+        if(structured&&typeof structured==='object'&&!Array.isArray(structured)){
+          const list=document.createElement('dl');list.className='meta-structured-output';
+          for(const [key,label] of [['visible_observation','Visible observation'],['supporting_visual_evidence','Supporting visual evidence'],
+                                    ['uncertainty','Uncertainty'],['suggested_coaching_question','Suggested coaching question']]){
+            const term=document.createElement('dt');term.textContent=label;const value=document.createElement('dd');
+            value.textContent=typeof structured[key]==='string'&&structured[key].trim()?structured[key]:'Not supplied';list.append(term,value);
+          }
+          card.append(list);
+        }else{const output=document.createElement('p');output.className='meta-activity-text';output.textContent=activity.output_preview;card.append(output);}
       }else{const output=document.createElement('p');output.className='meta-activity-text';output.textContent=activity.output_preview;card.append(output);}
     }
-    if(activity.error){const error=document.createElement('p');error.className='meta-activity-error';error.textContent=`${activity.error} ${activity.error_code||''}${activity.provider_http_status?` · HTTP ${activity.provider_http_status}`:''}`;card.append(error);}
+    if(activity.coach_objective){const goal=document.createElement('p');goal.textContent=`Coach objective: ${activity.coach_objective}`;card.append(goal);}
+    if(Array.isArray(activity.turns)&&activity.turns.length){const turns=document.createElement('ol');for(const turn of activity.turns){const line=document.createElement('li');line.textContent=`${formatTime(turn.startMs/1000)}–${formatTime(turn.endMs/1000)}${turn.speaker?` · Speaker ${turn.speaker} (unverified)`:''}: ${turn.transcript}`;turns.append(line);}card.append(turns);}
+    if(activity.error){const error=document.createElement('p');error.className='meta-activity-error';error.textContent=`${activity.error} ${activity.error_code||''}${activity.provider_http_status?` · HTTP ${activity.provider_http_status}`:''}${activity.provider_error_detail?` · ${activity.provider_error_detail}`:''}`;card.append(error);}
     if(activity.status==='response_received'){
       const review=document.createElement('div');review.className='meta-activity-review';
       if(activity.review){review.textContent=`Coach review: ${activity.review.decision.replaceAll('_',' ')} · ${activity.review.reviewer==='local_unauthenticated_coach'?'local Studio review':activity.review.reviewer}`;}
-      else for(const [label,decision] of [['Confirm visible observation','confirmed_observation'],['Reject observation','rejected_observation']]){
-        const button=document.createElement('button');button.type='button';button.className='btn-ctrl';button.textContent=label;
-        button.addEventListener('click',()=>reviewMetaActivity(activity.activity_id,decision));review.append(button);
+      else {
+        let edit=null;
+        if(activity.model_kind!=='sam'){
+          const label=document.createElement('label');label.textContent=activity.model_kind==='voice'?'Edit transcript before approval':'Edit proposed observation before approval';
+          edit=document.createElement('textarea');edit.maxLength=12000;edit.rows=3;edit.value=activity.output_preview||'';label.append(edit);review.append(label);
+        }
+        for(const [label,decision] of [[activity.model_kind==='voice'?'Approve transcript':'Confirm observation','confirmed_observation'],
+                                        [activity.model_kind==='voice'?'Reject transcript':'Reject observation','rejected_observation']]){
+          const button=document.createElement('button');button.type='button';button.className='btn-ctrl';button.textContent=label;
+          button.addEventListener('click',()=>reviewMetaActivity(activity.activity_id,decision,
+            decision==='confirmed_observation'&&edit&&edit.value!==activity.output_preview?edit.value:null));review.append(button);
+        }
       }
       card.append(review);
     }
@@ -167,10 +208,15 @@ async function refreshMetaActivity(){
   renderMetaActivity();
   if(state.metaActivities.some(item=>['submitted','processing'].includes(item.status)))setTimeout(()=>{if(token===state.metaPollToken)refreshMetaActivity();},1200);
 }
-async function reviewMetaActivity(activityId,decision){
+async function reviewMetaActivity(activityId,decision,editedText=null){
   if(!state.id||api.mode!=='local'||state.demo)return;
   try{await jsonResponse(await fetch(`${runUrl(state.id)}/meta-activity/${encodeURIComponent(activityId)}/review`,{
-    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision})}));await refreshMetaActivity();}
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision,...(editedText!==null?{edited_text:editedText}: {})})}));
+    await refreshMetaActivity();
+    if(decision==='confirmed_observation'&&state.metaActivities.some(item=>item.activity_id===activityId&&item.model_kind==='voice')){
+      const data=await jsonResponse(await fetch(`${runUrl(state.id)}`));
+      if(state.data&&state.id===data.run_id){state.data.transcript=data.transcript;renderCues();renderTimeline();}
+    }}
   catch(error){toast(`Review was not saved: ${error.message}`,'error');}
 }
 ui.btnMetaFrame.addEventListener('click',async()=>{
@@ -180,12 +226,14 @@ ui.btnMetaFrame.addEventListener('click',async()=>{
   ui.btnMetaFrame.disabled=true;state.metaError='Submitting selected source frame to Meta…';renderMetaActivity();
   try{
     const response=await fetch(`${runUrl(state.id)}/meta-frame`,{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:ui.metaModelSelect.value,timestamp_s:sourceTime})});
+      body:JSON.stringify({model:ui.metaModelSelect.value,timestamp_s:sourceTime,
+        ...(ui.metaModelSelect.value==='wonder'?{objective:ui.metaObjective.value.trim()}: {})})});
     await jsonResponse(response);state.metaError=null;await refreshMetaActivity();
   }catch(error){state.metaError=`Request not started: ${error.message}`;}
   finally{renderMetaActivity();}
 });
-ui.metaModelSelect.addEventListener('change',()=>{state.metaError=null;renderMetaActivity();});
+ui.metaModelSelect.addEventListener('change',()=>{const wonder=ui.metaModelSelect.value==='wonder';ui.metaObjective.hidden=!wonder;ui.metaObjectiveLabel.hidden=!wonder;state.metaError=null;renderMetaActivity();});
+ui.metaObjective.addEventListener('input',renderMetaActivity);
 function openRunOrJob(run){
   const status=String(run.status||'').toLowerCase();
   if(['queued','processing','failed','cancelled','unavailable'].includes(status)){
@@ -597,6 +645,10 @@ function observationTime() {
   const start=ui.matchVideo.seekable?.length ? ui.matchVideo.seekable.start(0) : 0;
   return videoTime()-start;
 }
+function sourceAnchorTime(){
+  return state.mediaKind==='annotated'?
+    TouchlineApi.sourceTimeFromPlayback(state.data?.frame_map,videoTime()):observationTime();
+}
 function seekObservation(time) {
   const start=ui.matchVideo.seekable?.length ? ui.matchVideo.seekable.start(0) : 0;
   ui.matchVideo.currentTime=Math.max(0,time+start); renderFrame();
@@ -854,7 +906,7 @@ async function refreshDevices(){
   try{const devices=await navigator.mediaDevices.enumerateDevices();let index=0;for(const device of devices.filter(d=>d.kind==='audioinput'))setOption(ui.micInputSelect,device.deviceId,device.label||`Microphone ${++index}`);}
   catch(error){ui.micStatusLabel.textContent=`Cannot list microphones: ${error.message}`;}
 }
-function discardAudio(){if(state.audioUrl)URL.revokeObjectURL(state.audioUrl);state.audioUrl=null;state.recorded=null;ui.audioPreview.removeAttribute('src');ui.audioReview.hidden=true;}
+function discardAudio(){if(state.audioUrl)URL.revokeObjectURL(state.audioUrl);state.audioUrl=null;state.recorded=null;ui.audioPreview.removeAttribute('src');ui.audioReview.hidden=true;ui.audioFileInput.value='';}
 function stopStream(){state.stream?.getTracks().forEach(t=>t.stop());state.stream=null;}
 function recordButton(label){
   const dot=document.createElement('span');dot.className='record-dot';dot.setAttribute('aria-hidden','true');
@@ -869,11 +921,12 @@ async function uploadRecordedAudio() {
   state.uploadingAudio=true;ui.btnUploadAudio.disabled=true;ui.btnDiscardAudio.disabled=true;ui.btnRecordMic.disabled=true;
   ui.micStatusLabel.textContent='Uploading completed audio for transcription…';
   try{
-    const query=new URLSearchParams({run_id:rec.runId,video_anchor_start_s:String(rec.anchor),monotonic_start_ms:String(rec.monotonic),language_code:rec.language});
-    const data=await jsonResponse(await fetch(`/api/audio/transcribe?${query}`,{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:rec.blob}));
-    if(data.status!=='ok'||!data.transcript)throw new Error('Transcription response was incomplete');
-    if(state.id===rec.runId&&state.data){state.data.transcript=data.transcript;renderCues();renderTimeline();renderFrame();}
-    discardAudio();ui.micStatusLabel.textContent='Transcript saved. Review the words, timing and speaker labels.';toast('Transcript received.','success');
+    if(api.mode!=='local'||state.demo)throw new Error('Muse Voice requires a real local Studio session.');
+    const data=await jsonResponse(await fetch(`${runUrl(rec.runId)}/meta-audio?anchor_s=${encodeURIComponent(rec.anchor)}`,
+      {method:'POST',headers:{'Content-Type':rec.blob.type||'application/octet-stream'},body:rec.blob}));
+    if(data.status!=='submitted'||!data.activity_id)throw new Error('Meta did not accept an audio job.');
+    discardAudio();ui.micStatusLabel.textContent='Audio submitted to Muse Voice. Review the actual result in Meta model activity; it is not yet a coach-approved transcript.';
+    refreshMetaActivity();toast('Audio submitted for transcription.','success');
   }catch(error){
     if(state.id===rec.runId){ui.micStatusLabel.textContent=`Transcription failed: ${error.message}. Recording kept for retry.`;toast(error.message,'error');}
   }finally{state.uploadingAudio=false;ui.btnUploadAudio.disabled=false;ui.btnDiscardAudio.disabled=false;ui.btnRecordMic.disabled=false;}
@@ -891,7 +944,9 @@ ui.btnRecordMic.addEventListener('click',async()=>{
     if(state.id!==requestedRun){stream.getTracks().forEach(t=>t.stop());return;}
     state.stream=stream;
     const chunks=[];
-    const recording={runId:requestedRun,anchor:observationTime(),monotonic:performance.now(),language:ui.headerLangSelect.value,failed:false};
+    const anchor=sourceAnchorTime();
+    if(!Number.isFinite(anchor)){stopStream();ui.micStatusLabel.textContent='Original source time is unavailable. Switch to source video before recording coach audio.';return;}
+    const recording={runId:requestedRun,anchor,monotonic:performance.now(),language:ui.headerLangSelect.value,failed:false};
     state.recording=recording;
     const recorder=new MediaRecorder(stream);state.recorder=recorder;
     recorder.ondataavailable=e=>{if(e.data?.size)chunks.push(e.data);};
@@ -905,7 +960,7 @@ ui.btnRecordMic.addEventListener('click',async()=>{
       if(!blob.size){ui.micStatusLabel.textContent='No audio was captured.';return;}
       state.recorded={blob,...recording};state.audioUrl=URL.createObjectURL(blob);
       ui.audioPreview.src=state.audioUrl;ui.audioReview.hidden=false;
-      uploadRecordedAudio();
+      ui.micStatusLabel.textContent='Audio captured. Review it, then choose Transcribe with Muse Voice.';
     };
     await ui.matchVideo.play();
     if(state.id!==requestedRun){ui.matchVideo.pause();stopStream();return;}
@@ -916,6 +971,19 @@ ui.btnRecordMic.addEventListener('click',async()=>{
   }catch(error){stopStream();ui.matchVideo.pause();ui.micStatusLabel.textContent=`Recording could not start: ${error.message}`;}
 });
 ui.btnUploadAudio.addEventListener('click',uploadRecordedAudio);
+ui.audioFileInput.addEventListener('change',()=>{
+  const file=ui.audioFileInput.files?.[0];if(!file)return;
+  if(!state.id||!state.data?.video_url){ui.micStatusLabel.textContent='Open a real session before selecting coach audio.';ui.audioFileInput.value='';return;}
+  if(file.size<100||file.size>8_000_000){ui.micStatusLabel.textContent='Choose an audio file between 100 bytes and 8 MB.';ui.audioFileInput.value='';return;}
+  const supported=['audio/wav','audio/webm','audio/ogg','audio/mp4','audio/x-wav'];
+  if(file.type&&!supported.includes(file.type)){ui.micStatusLabel.textContent='Choose WAV, WebM, Ogg or MP4 audio.';ui.audioFileInput.value='';return;}
+  if(state.audioUrl)URL.revokeObjectURL(state.audioUrl);
+  const anchor=sourceAnchorTime();
+  if(!Number.isFinite(anchor)){ui.micStatusLabel.textContent='Original source time is unavailable. Switch to source video before attaching coach audio.';ui.audioFileInput.value='';return;}
+  state.recorded={blob:file,runId:state.id,anchor};state.audioUrl=URL.createObjectURL(file);
+  ui.audioPreview.src=state.audioUrl;ui.audioReview.hidden=false;
+  ui.micStatusLabel.textContent='Selected coach audio is ready. Review it before sending one bounded Meta transcription request.';
+});
 
 function openCue(cue=null){if(!state.data){toast('Select a session first.','error');return;}state.editing=cue;
   ui.modalSubTitle.textContent=cue?'Edit coach cue':'Add coach cue';ui.subStartInput.value=cue?.video_start_s??observationTime();
