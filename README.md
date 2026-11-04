@@ -2,9 +2,13 @@ Copyright (c) 2026 Team Vikzar. All rights reserved. This repository is made pub
 
 # Touchline Studio
 
-Touchline Studio is a football video-review workspace for coaches and academies. It connects a recording to timestamped observations, temporary player tracks, coach review, and later corrections. The goal is to let a coach inspect evidence before associating a track with a player or drawing a development conclusion.
+Touchline is building an AI-powered football video intelligence platform that transforms match and training footage into structured, evidence-backed insights for coaches and player development.
+
+This repository contains **Touchline Studio**, the current coach-facing implementation. A coach can browse a saved run, inspect source or available annotated video and timestamped evidence, review provisional tracks and Meta-generated proposals, and record local corrections. The product is designed to connect those moments to future player development; it is not yet a deployed multi-club or parent platform.
 
 This public repository contains source code, tests and technical documentation. It contains **no match recording, model checkpoint, trained weight, credential or completed analysis export**. Public visibility permits Meta Global AI Developer Hackathon evaluation; it is not an open-source licence.
+
+**Architecture guide:** [system architecture and diagram](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md) · [scalability strategy](docs/TOUCHLINE_SCALABILITY.md) · [Panorama integration boundary](docs/TOUCHLINE_PANORAMA_INTEGRATION.md) · [review gates](docs/REVIEW_GATES.md) · [remediation status](docs/PANORAMA_STUDIO_REMEDIATION.md) · [migration provenance](MIGRATION_PROVENANCE.md). The Panorama integration document is a dated proposal; its proposed production routes are not claims of deployed endpoints.
 
 ## What is implemented
 
@@ -19,6 +23,8 @@ Coach workspace → local Studio API and job state → validated source and 24 f
 ```
 
 The full sequence above has passed an **offline mocked-Sandbox test with a fresh MP4 fixture**. A fresh browser-to-live-Modal-to-coach run has **not** been verified. The historical four-minute export and tracking results are review evidence, not production acceptance or a validated player-identity result.
+
+The architecture separates coach interaction from bounded processing. The current local Studio stores jobs and run artifacts on disk and performs Panorama work in a background thread through an adapter; a durable queue, cloud object store, authenticated tenant service and horizontally scaled deployment are **future production boundaries**. The [system diagram](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md#system-at-a-glance) marks those boundaries, and the [scalability strategy](docs/TOUCHLINE_SCALABILITY.md) explains how to reach them without treating local mocks as live GPU capacity.
 
 ## Meta model demonstration
 
@@ -81,19 +87,24 @@ python -B tools/run_offline_checks.py artifacts
 
 The broader suite is `python -B tools/run_offline_checks.py`. Some tests need additional optional packages, including Torch/Torchvision, SciPy and OpenCV; report missing-dependency errors separately from code failures. These commands do not launch Modal or process a private recording.
 
-## Status and limits
+## Current capability status
 
-| Capability | Current status |
+| Capability | Status and evidence |
 | --- | --- |
-| Coach workspace, local run browsing, video timeline and evidence presentation | Implemented; local and synthetic paths tested |
-| Fresh MP4 preparation, frame map, distinct original/normalized hashes, export conversion and restart reopening | Tested with a small fixture and mocked Sandbox |
-| Panorama/ResNet worker and pinned checkpoint contract | Source present; checkpoint bytes and deployed image are not in this repository |
-| Live Modal GPU execution from Studio | Gated and **not verified** for a fresh recording |
-| Meta AI activity | SAM 3.1, Muse Spark, Muse Wonder and Muse Voice Transcribe each returned a genuine usable response in local Studio; Voice used generated test speech, and all outputs require coach review |
-| Production authentication, roster authorization and durable cloud storage | Integration boundaries exist; a complete production service is not verified |
-| Temporary track review and separate correction child runs | Local file-backed workflow; roster identity requires trusted review; storage is not tamper-proof |
-| Tactical minimap, MOTChallenge export, jersey recognition, validated speed/distance, automatic retraining, coach voice commentary and advanced scoring | Planned or separately experimental; not presented as verified recording outputs |
+| Coach workspace and local run browsing | **Implemented locally.** Studio lists file-backed runs; the browser can reopen a saved run. No production club directory is present. |
+| Video timeline and evidence presentation | **Implemented locally.** Source/annotated media and timestamped observations display when corresponding verified artifacts exist; synthetic QA is explicitly labelled. |
+| Video preparation and normalization | **Mock-tested.** Fresh MP4 probing and bounded PyAV normalization are exercised by `test_video_normalize.py` and `test_panorama_backend_orchestration.py`. |
+| Frame mapping and provenance | **Mock-tested and importer-tested.** Separate original/normalized hashes and the source correspondence map are validated; historical saved-export import was reviewed. |
+| Panorama/ResNet worker | **Source and contract present.** Worker, adapter and checkpoint hash requirement exist; checkpoint bytes and deployed image are absent from this repository. |
+| Modal GPU execution | **Integration boundary present; fresh live run unverified.** Sandbox creation/export code exists, but the fresh Studio-to-Modal path has only mocked execution evidence. |
+| Meta AI activity | **Four genuine local smoke responses recorded.** SAM 3.1, Muse Spark, Muse Wonder and Muse Voice Transcribe returned usable responses; Voice used generated test speech. Saved outputs and coach review are local, not production reliability evidence. |
+| Coach review and temporary-track correction | **Implemented locally.** Model proposals can be reviewed; separate correction child runs are file-backed. A track ID is not a verified roster identity. |
+| Production authentication and roster authorization | **Not implemented as a production service.** Loopback development and optional injected bearer/access callbacks are boundaries, not tenant or roster management. |
+| Durable cloud storage | **Not implemented.** Jobs, media, activity and revisions are local files; local hashes do not make them tamper-proof. |
+| Multi-tenant production deployment | **Not implemented or verified.** No demonstrated tenant isolation, managed queue or horizontally scaled application deployment. |
+
+Planned analysis capabilities include a tactical minimap, MOTChallenge export, jersey recognition, validated speed and distance, automatic retraining, coach voice commentary and advanced scoring. The interface labels unavailable outputs as planned; no fabricated values should appear as recording results.
 
 Detections and temporary track IDs do not prove a player's identity. Pixel movement is not validated distance or speed. Coach assessments and synthetic examples must not be presented as measured improvement. A historical export's detection quality does not establish tracking or identity accuracy. Camera motion, incorrect geometry or timing, corrupt video, missing lineage, and incomplete worker outputs can invalidate a run.
 
-Live execution requires the exact approved checkpoint and source bundle, a compatible Modal SDK/image and access, a qualifying stationary panorama, trusted server-side authorization, and an explicit bounded spending approval. See [remediation status](docs/PANORAMA_STUDIO_REMEDIATION.md), [integration architecture](docs/TOUCHLINE_PANORAMA_INTEGRATION.md), [review gates](docs/REVIEW_GATES.md), and [snapshot provenance](MIGRATION_PROVENANCE.md). Other dated documents in `docs/` preserve engineering context; their historical plans and test counts are not current product claims.
+Live execution requires the exact approved checkpoint and source bundle, a compatible Modal SDK/image and access, a qualifying stationary panorama, trusted server-side authorization, and an explicit bounded spending approval. See the [architecture](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md) and [scalability strategy](docs/TOUCHLINE_SCALABILITY.md) for the implementation-to-production boundary. Other dated documents in `docs/` preserve engineering context; their historical plans and test counts are not current product claims.
