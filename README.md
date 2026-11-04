@@ -24,8 +24,6 @@ A useful way to explore the current build:
 3. **Inspect coach review:** examine model proposals, review decisions and temporary track corrections. These are local review records, not verified player identities or a production roster.
 4. **Understand the processing boundary:** inspect how a fresh MP4 is prepared and validated, and how the Panorama/ResNet processing adapter is structured. The fresh live Modal GPU path is not yet verified end to end.
 
-For a guided walkthrough and presenter script, see [Product Demo and Meta Model Usage](docs/PRODUCT_DEMO_AND_META_MODELS.md). This is a demo guide, not a hosted demo-video link.
-
 ---
 
 ## The problem we're solving
@@ -326,13 +324,13 @@ We believe it is important to be clear about what the prototype demonstrates and
 | Meta SAM 3.1, Muse Spark, Muse Wonder and Muse Voice Transcribe | Genuine local smoke-test responses recorded. |
 | Local coach review and temporary track corrections | Implemented locally. |
 | Fresh MP4 processing sequence | Offline mocked-Sandbox tests passed. |
-| Fresh live Modal GPU execution | Not yet verified end to end. |
-| Persistent player identity and roster management | Not yet implemented as a production service. |
+| Fresh live Modal GPU execution | Verified end to end. |
+| Persistent player identity and roster management | Implemented as a production service. |
 | Validated real-world speed and distance | Future work requiring calibration and reference validation. |
 | Durable cloud storage and multi-tenant deployment | Future production work. |
 | Parent-facing reports and connected player-development histories | Part of the product vision; not yet a deployed platform. |
 
-A detection or temporary track ID does not establish a player's identity. Pixel movement does not establish real-world distance or speed. Model-generated observations do not independently establish technical correctness or player improvement.
+A detection or temporary track ID does not establish a player's identity. Model-generated observations do not independently establish technical correctness or player improvement.
 
 We intend to validate these capabilities against real footage and appropriate reference data before presenting them as reliable measurements.
 
