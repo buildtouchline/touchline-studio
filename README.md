@@ -1,110 +1,298 @@
 Copyright (c) 2026 Team Vikzar. All rights reserved. This repository is made public solely for hackathon submission and judging purposes. No permission is granted to copy, modify, distribute, or use this software for any other purpose, commercial or non-commercial.
 
-# Touchline Studio
+# Touchline
+### AI-powered football video intelligence and player development
 
-Touchline is building an AI-powered football video intelligence platform that transforms match and training footage into structured, evidence-backed insights for coaches and player development.
+**Turning football footage into meaningful coaching insights and continuous player development.**
 
-This repository contains **Touchline Studio**, the current coach-facing implementation. A coach can browse a saved run, inspect source or available annotated video and timestamped evidence, review provisional tracks and Meta-generated proposals, and record local corrections. The product is designed to connect those moments to future player development; it is not yet a deployed multi-club or parent platform.
+Touchline is an AI-powered football development platform that connects coaches, players, schools and parents through video intelligence and continuous player development.
 
-This public repository contains source code, tests and technical documentation. It contains **no match recording, model checkpoint, trained weight, credential or completed analysis export**. Public visibility permits Meta Global AI Developer Hackathon evaluation; it is not an open-source licence.
+We help coaches analyse training footage, identify important moments, attach observations and feedback to individual players, and follow their development across sessions. Players build a record of their progress, while parents gain visibility into their child's development through updates approved by their coach.
 
-**Architecture guide:** [system architecture and diagram](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md) · [scalability strategy](docs/TOUCHLINE_SCALABILITY.md) · [Panorama integration boundary](docs/TOUCHLINE_PANORAMA_INTEGRATION.md) · [review gates](docs/REVIEW_GATES.md) · [remediation status](docs/PANORAMA_STUDIO_REMEDIATION.md) · [migration provenance](MIGRATION_PROVENANCE.md). The Panorama integration document is a dated proposal; its proposed production routes are not claims of deployed endpoints.
+Our goal is to make structured, evidence-based football development more accessible, especially for grassroots players and school football programmes.
 
-## What is implemented
+---
 
-The browser workspace is plain HTML, CSS and JavaScript under [`src/touchline/web/`](src/touchline/web/). Its API client separates explicit synthetic demo, local Studio, and configured authenticated production modes; production requests do not silently fall back to fixtures. The Python [`Studio server`](src/touchline/studio.py) serves the workspace, accepts bounded local MP4 uploads when readiness checks pass, stores file-backed jobs and runs, and offers run, observation, artifact and correction routes. It is **not** a complete multi-tenant production backend.
+## The problem we're solving
 
-For the selected Panorama/ResNet path, the [`worker adapter`](src/touchline/adapters/panorama_worker.py) probes a fresh source MP4, checks its SHA-256, runs [timestamp-based normalization](src/touchline/video/normalize.py), records a source-to-normalized [frame map](src/touchline/panorama_import.py), verifies separate input and code hashes, and prepares a bounded [Modal Sandbox worker](tools/modal_panorama_worker.py) job. The worker uses a pinned Faster R-CNN ResNet50-FPN-v2 checkpoint contract. Completed exports can be checked and converted to canonical observations and a local run bundle. Coach review can create a separate child run while leaving the parent evidence unchanged; file-backed child runs are **not tamper-proof storage**.
+Recording a training session is relatively easy. Turning hours of footage into useful feedback for individual players is not.
 
-```text
-Coach workspace → local Studio API and job state → validated source and 24 fps copy
-  → bounded Panorama/ResNet Sandbox adapter → verified exported artifacts
-  → file-backed run and observations → coach evidence review and child correction
-```
+Coaches often rely on memory, informal observations and manual video review to understand how players are developing. Finding specific moments, documenting feedback, and checking whether a player has applied a correction in a later session can become difficult to manage consistently.
 
-The full sequence above has passed an **offline mocked-Sandbox test with a fresh MP4 fixture**. A fresh browser-to-live-Modal-to-coach run has **not** been verified. The historical four-minute export and tracking results are review evidence, not production acceptance or a validated player-identity result.
+At the same time, parents often have limited visibility into what their children are working on, how they are progressing, and what their coaches want them to improve.
 
-The architecture separates coach interaction from bounded processing. The current local Studio stores jobs and run artifacts on disk and performs Panorama work in a background thread through an adapter; a durable queue, cloud object store, authenticated tenant service and horizontally scaled deployment are **future production boundaries**. The [system diagram](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md#system-at-a-glance) marks those boundaries, and the [scalability strategy](docs/TOUCHLINE_SCALABILITY.md) explains how to reach them without treating local mocks as live GPU capacity.
+This creates a gap between what happens on the pitch and the information available to support a player's development.
 
-## Meta model demonstration
+Touchline aims to bridge that gap.
 
-Coach Studio now has a **Meta model activity** panel inside a real recording's Analysis workspace. It extracts one selected frame from the server's source video using its presentation timestamp; when the coach watches annotated output, the selected time is mapped back to source time through the supplied frame correspondence map. It sends a bounded request from the Python server to Meta Model API, then stores the request status, returned model ID, provider request ID, timestamps, latency, source-frame hash and safe output preview alongside that run. The browser receives no provider credential. A coach can confirm or reject a visible model observation; that local review does **not** confirm a roster identity or publish a parent report.
+## Our approach
 
-```text
-Coach selects a real run and source-video moment
-  → Studio decodes that frame from original video PTS
-  → server-side Meta Model API request (when enabled)
-  → local per-run AI activity record and source-frame hash
-  → returned boxes/text shown beside the actual frame
-  → coach reviews the proposal; player identity remains unconfirmed
-```
+Touchline connects video evidence, coaching observations and player development into one continuous workflow.
 
-| Intended Meta model | Role | Current verification |
-| --- | --- | --- |
-| **SAM 3.1** (`sam-3.1`) | Selected-frame person segmentation; boxes and encoded masks | One real Model API response received in local Studio from a frame of authorized football footage. Bounding-box proposals can be overlaid when the exact saved source frame passes hash verification; masks are retained as technical output, not rendered or independently validated. |
-| **Muse Spark** (`muse-spark-1.3`) | Selected-frame visual observation for coach review | A genuine completed `/v1/responses` call returned a structured observation from the real football frame. Its saved text is displayed for coach review; an earlier failed attempt remains in the activity history. |
-| **Muse Wonder** (`muse-wonder-1.0`) | Assess what one frame supports about a coach objective, and identify missing evidence | A genuine completed `/v1/responses` call returned a cautious response about the shoulder-check objective. It correctly stated that the wide still cannot establish a shoulder check or improvement. An earlier failed attempt remains visible. |
-| **Muse Voice Transcribe** (`muse-voice-transcribe-1.0`) | File transcription of coach audio | A genuine `/v1/asr/transcribe` call returned text and one timed turn from a **locally generated spoken-audio test file**, not a real coach recording. Coach approval can attach an edited transcript to the local session; speaker identity is unverified. |
+1. **Record:** Coaches upload or access football training footage.
+2. **Analyse:** AI assists in identifying players, relevant moments and visual evidence within the footage.
+3. **Review:** Coaches inspect important moments, add observations and provide feedback linked to individual players and coaching objectives.
+4. **Track:** Coaching objectives and evidence are carried forward into subsequent sessions, allowing coaches to review whether specific corrections are reflected in later footage.
+5. **Share:** Coaches can approve understandable progress updates and relevant highlights for parents.
 
-To enable bounded calls in a trusted local server process, set `MODEL_API_KEY` and `TOUCHLINE_META_MAX_CALLS` (an integer from `1` to `8`) in that process's environment, then start Studio with an authorized run directory. The default allowance is **zero**; the recorded smoke-test run exhausted its configured allowance. Open a real source recording, seek to a frame, and choose SAM, Spark or Wonder. Wonder also requires a specific coach objective. For Voice, record or select an audio file, review it, then explicitly submit it. The server converts audio to mono 16-bit PCM WAV at 16 kHz, accepts at most 8 MB and 120 seconds, and sends one multipart request to Meta's file endpoint. Each model permits a second attempt only after a recorded failure; every attempt counts against the server allowance. No provider call is made when the allowance is closed. Credentials stay server-side and must never be committed or supplied through the browser. A fresh clone contains no recording, checkpoint or Model API key. [Meta Model API](https://dev.meta.ai/docs/overview), [image understanding](https://dev.meta.ai/docs/image-understanding), [segmentation](https://dev.meta.ai/docs/sam/segmenting), and [voice transcription](https://dev.meta.ai/docs/speech-to-text) document the interfaces.
+The coach remains central to the process. AI assists with reviewing and organising information; it does not independently decide whether a player has improved or whether a football action was technically correct.
 
-Activity JSON persists per run with timestamps, model ID, request or provider session reference, latency, input hash, safe output preview, failure metadata and local coach review. It does not preserve the complete raw provider envelope or uploaded audio. Approving Voice adds a local transcript clip to the session; edited wording uses the full clip interval because the provider's original turn boundaries no longer locate each edited word. These local records are not production authentication, approved parent reports or verified player identities. The successful model smoke tests establish access and a working local UI path, not production reliability or tracking quality.
+## What Touchline aims to provide
 
-New selected-frame requests also save the exact submitted JPEG beside their activity record, with its SHA-256 checked on retrieval. Older saved requests without that JPEG may require the original decoding runtime to reproduce the bytes exactly. If verification fails, Studio shows an unavailable frame-preview state while keeping the genuine saved model text and review status; it never substitutes a different frame. This limitation applies to the recovered historical run used in the local demonstration.
+### For coaches
 
-## Local setup
+- Review training footage through a video-centred workspace.
+- Identify and revisit important moments.
+- Associate observations and coaching feedback with individual players.
+- Track specific coaching objectives across sessions.
+- Compare evidence from comparable training sessions.
+- Build more structured player-development records.
 
-Use Python **3.12 or newer**. From the repository root on macOS or Linux:
+### For players
 
-```sh
+- Build a continuous record of their football development.
+- Understand what they are doing well and what needs attention.
+- Revisit coach feedback and relevant video evidence.
+- Follow progress against individual coaching objectives.
+
+### For schools and academies
+
+- Organise training sessions and player-development information.
+- Give coaches a more consistent way to document individual progress.
+- Build a connected view of player development across programmes and teams.
+
+### For parents
+
+- Gain visibility into their child's development.
+- Receive relevant highlights and coach-approved progress updates.
+- Understand what their child has been working on and what to focus on next.
+
+---
+
+## Why Meta's models matter
+
+When we began exploring Touchline, one thing became clear from speaking to coaches: recording training sessions is only useful if you can actually do something meaningful with that footage.
+
+A coach might notice that a player is struggling with their first touch, positioning or movement. Finding those moments in hours of footage, documenting the feedback and checking whether the player improves in a subsequent session takes time.
+
+We want to make that process much easier.
+
+Meta's multimodal AI and visual capabilities are important because they allow us to explore how different forms of information can work together: what the camera captures, what the coach observes and what the coach says.
+
+We've built our prototype around four complementary Meta model capabilities:
+
+| Meta model | Intended role in Touchline |
+|---|---|
+| **SAM 3.1** | Visual segmentation and proposals from selected football video frames. |
+| **Muse Spark** | Multimodal visual observations that can help coaches examine what is happening in a frame. |
+| **Muse Wonder** | Contextual reasoning around coaching objectives, evidence and the limitations of what a frame can establish. |
+| **Muse Voice Transcribe** | Converting spoken coaching instructions into text that can be reviewed and associated with a session. |
+
+These capabilities are not intended to operate as isolated AI demonstrations. Our aim is to connect them into a useful coaching workflow.
+
+For example, imagine a coach asking a player to improve their first touch. Touchline could help the coach identify relevant moments from that session, attach feedback to those moments, and bring up footage from a later session so the coach can review whether there has been progress.
+
+Instead of feedback getting lost after training, it becomes part of the player's development history.
+
+We do not want AI making coaching decisions. We want it to reduce the manual work around reviewing footage and tracking progress, allowing coaches to spend more time actually developing players.
+
+---
+
+## What we've built for the Meta AI Developer Hackathon
+
+We're building **Touchline Studio**, a working coach-facing prototype that demonstrates the foundations of this larger platform.
+
+The prototype brings together a video-review workspace, football footage, timestamped evidence, local coach annotations and Meta model integrations.
+
+### 1. Video intelligence workspace
+
+Coaches can browse saved analysis runs, inspect available source or annotated video, navigate timestamped observations and review provisional player tracks.
+
+The implementation includes a local Studio server, video-processing interfaces, run management and evidence presentation.
+
+### 2. Meta model integrations
+
+We've implemented a Meta model activity workflow inside the Studio interface.
+
+The current prototype has received genuine responses from all four model integrations:
+
+- **SAM 3.1:** A real response was received from a selected frame of authorised football footage. Bounding-box proposals can be reviewed against the corresponding source frame when its exact image can be verified.
+- **Muse Spark:** A genuine multimodal response was received from a real football frame and is available for coach review.
+- **Muse Wonder:** A genuine response was received for a coaching objective. In one test, it correctly identified that a wide still image could not establish whether a player had performed a shoulder check or improved.
+- **Muse Voice Transcribe:** A genuine transcription response was received using a locally generated spoken-audio test file. This demonstrates the transcription workflow, not yet a validated real-coach recording workflow.
+
+### 3. Coach review and feedback
+
+The prototype allows model-generated proposals and observations to be reviewed locally.
+
+Coaches can record review decisions and make temporary track corrections through a file-backed workflow. These corrections are kept separate from the original evidence.
+
+Player identity is not automatically established by a detection box or temporary track ID. Coach review remains necessary.
+
+### 4. Video processing foundations
+
+The repository includes a Panorama/ResNet processing path, video preparation and normalization, timestamp correspondence, artifact validation and a bounded Modal Sandbox integration.
+
+The fresh-video processing sequence has passed offline tests using a mocked Sandbox and a fresh MP4 fixture. A complete fresh browser-to-live-Modal-to-coach workflow has not yet been verified.
+
+These foundations are intended to support the broader video intelligence workflow as the prototype develops.
+
+---
+
+## Our longer-term technical direction
+
+Touchline is designed around a simple principle: **every meaningful development insight should be connected to the player, the session, the coaching objective and the underlying evidence.**
+
+Our proposed video analytics pipeline includes:
+
+1. Video ingestion and preprocessing.
+2. Player detection and tracking.
+3. Timestamped observations and movement trails.
+4. Spatial analysis and pitch calibration where camera conditions allow.
+5. Evidence-linked coaching observations.
+6. Session-to-session comparisons.
+7. Coach-reviewed development summaries.
+
+Over time, we intend to explore additional capabilities such as:
+
+- Player movement paths and heatmaps.
+- Time spent in visible activity intervals.
+- Drill participation and session summaries.
+- Calibrated distance and speed estimates.
+- Sprint and acceleration events.
+- Ball tracking and skill-specific analysis.
+- Tactical positioning and movement patterns.
+
+These are development targets, not claims that every metric is already available or validated. Real-world measurements such as speed and distance require suitable camera calibration, reliable tracking and comparison against reference data.
+
+We would rather provide a smaller number of trustworthy insights than fill a dashboard with numbers that coaches cannot rely on.
+
+For more detail, see our [Video Analytics and Player Development Plan](docs/TOUCHLINE_VIDEO_ANALYTICS_PLAN.md) if present in the repository, alongside the technical architecture and scalability documents below.
+
+---
+
+## From a working prototype to a connected platform
+
+The current Studio is a local, file-backed implementation. It demonstrates important pieces of the workflow, but it is not yet the complete multi-club platform we envision.
+
+Our next development priorities are:
+
+| Stage | Focus |
+|---|---|
+| **1. Strengthen video intelligence** | Improve player detection, tracking, video evidence and processing reliability on real football footage. |
+| **2. Connect coaching objectives** | Make it easier to associate coach instructions, observations and relevant footage with individual players. |
+| **3. Demonstrate longitudinal development** | Connect comparable footage across sessions and allow coaches to review evidence of progress. |
+| **4. Build player-development records** | Organise observations, coaching objectives and validated metrics into continuous player histories. |
+| **5. Extend to schools and parents** | Develop appropriate school, coach, player and parent experiences with consent and access controls. |
+| **6. Scale the infrastructure** | Move from local file-backed processing towards durable storage, managed background jobs and secure multi-club deployment. |
+
+The architecture and scalability strategy describe how we intend to move from the current prototype towards this broader platform. Proposed production infrastructure should not be confused with infrastructure already deployed.
+
+---
+
+## Privacy and responsible development
+
+Football footage can contain identifiable information, particularly when working with school-age players.
+
+Privacy, consent and access control are therefore important parts of Touchline's intended product architecture.
+
+Our direction includes:
+
+- Appropriate consent from schools, guardians and participants.
+- Controlled access to identifiable footage and player records.
+- Clear video retention and deletion policies.
+- Coach approval before progress reports or highlights are shared with parents.
+- Careful handling of player identity and uncertain AI observations.
+- Avoiding unsupported performance claims or misleading comparisons.
+
+AI-generated observations should remain distinguishable from coach-confirmed feedback and validated measurements.
+
+---
+
+## Repository and technical documentation
+
+This repository contains the current Touchline Studio implementation, source code, tests and supporting technical documentation.
+
+| Document | Description |
+|---|---|
+| [System Architecture](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md) | Current implementation and proposed system architecture. |
+| [Scalability Strategy](docs/TOUCHLINE_SCALABILITY.md) | Proposed path towards scalable processing and deployment. |
+| [Review Gates](docs/REVIEW_GATES.md) | Review and validation boundaries. |
+| [Panorama Integration](docs/TOUCHLINE_PANORAMA_INTEGRATION.md) | Panorama integration proposal and implementation boundaries. |
+
+---
+
+## Running Touchline Studio locally
+
+**Requirements:** Python 3.12 or newer.
+
+From the repository root:
+
+```bash
 python3.12 -m venv .venv
-. .venv/bin/activate
+source .venv/bin/activate
 python -m pip install -e '.[vision]'
 python -m touchline studio --runs-dir ./runs --port 8765
 ```
 
-Open `http://127.0.0.1:8765/`. The local server and workspace can open without a Modal account. **Real Panorama upload readiness remains closed** until its checkpoint, approved code bundle, compatible runtime, deployment probe, stationary-camera approval, access controls and spending ledger are supplied. Do not place secrets in browser assets or commit them. The default Studio server is for loopback development, not public hosting.
+Open:
 
-No frontend build is needed; the current client is served directly. To inspect the **explicit synthetic QA fixture**, start its separate local server and open `http://127.0.0.1:8766/`:
-
-```sh
-python -B src/touchline/web/qa/serve.py --port 8766
+```text
+http://127.0.0.1:8765/
 ```
 
-The fixture is labelled as synthetic. Its test video and observations are not footage or model results from a football match.
+The local Studio workspace can be opened without a Modal account. Real Panorama processing remains subject to the required checkpoint, approved code bundle, compatible runtime, access controls and spending approval.
 
-## Offline verification
+The default server is intended for local development, not public hosting.
 
-After installing the vision extra, run the focused fresh-MP4 mock, importer and normalizer tests:
+### Offline tests
 
-```sh
-PYTHONPATH=src:tests python -B -m unittest test_panorama_backend_orchestration test_panorama_import test_video_normalize -q
+```bash
 PYTHONPATH=src:tests python -B -m unittest test_meta_activity test_meta_studio_api -q
 node --test src/touchline/web/*.test.cjs
 node --check src/touchline/web/app.js
-python -B tools/run_offline_checks.py artifacts
 ```
 
-The broader suite is `python -B tools/run_offline_checks.py`. Some tests need additional optional packages, including Torch/Torchvision, SciPy and OpenCV; report missing-dependency errors separately from code failures. These commands do not launch Modal or process a private recording.
+Additional processing tests and the broader offline verification suite are documented in the repository.
 
-## Current capability status
+---
 
-| Capability | Status and evidence |
-| --- | --- |
-| Coach workspace and local run browsing | **Implemented locally.** Studio lists file-backed runs; the browser can reopen a saved run. No production club directory is present. |
-| Video timeline and evidence presentation | **Implemented locally.** Source/annotated media and timestamped observations display when corresponding verified artifacts exist; synthetic QA is explicitly labelled. |
-| Video preparation and normalization | **Mock-tested.** Fresh MP4 probing and bounded PyAV normalization are exercised by `test_video_normalize.py` and `test_panorama_backend_orchestration.py`. |
-| Frame mapping and provenance | **Mock-tested and importer-tested.** Separate original/normalized hashes and the source correspondence map are validated; historical saved-export import was reviewed. |
-| Panorama/ResNet worker | **Source and contract present.** Worker, adapter and checkpoint hash requirement exist; checkpoint bytes and deployed image are absent from this repository. |
-| Modal GPU execution | **Integration boundary present; fresh live run unverified.** Sandbox creation/export code exists, but the fresh Studio-to-Modal path has only mocked execution evidence. |
-| Meta AI activity | **Four genuine local smoke responses recorded.** SAM 3.1, Muse Spark, Muse Wonder and Muse Voice Transcribe returned usable responses; Voice used generated test speech. Saved outputs and coach review are local, not production reliability evidence. |
-| Coach review and temporary-track correction | **Implemented locally.** Model proposals can be reviewed; separate correction child runs are file-backed. A track ID is not a verified roster identity. |
-| Production authentication and roster authorization | **Not implemented as a production service.** Loopback development and optional injected bearer/access callbacks are boundaries, not tenant or roster management. |
-| Durable cloud storage | **Not implemented.** Jobs, media, activity and revisions are local files; local hashes do not make them tamper-proof. |
-| Multi-tenant production deployment | **Not implemented or verified.** No demonstrated tenant isolation, managed queue or horizontally scaled application deployment. |
+## Current implementation boundaries
 
-Planned analysis capabilities include a tactical minimap, MOTChallenge export, jersey recognition, validated speed and distance, automatic retraining, coach voice commentary and advanced scoring. The interface labels unavailable outputs as planned; no fabricated values should appear as recording results.
+We believe it is important to be clear about what the prototype demonstrates and what remains future work.
 
-Detections and temporary track IDs do not prove a player's identity. Pixel movement is not validated distance or speed. Coach assessments and synthetic examples must not be presented as measured improvement. A historical export's detection quality does not establish tracking or identity accuracy. Camera motion, incorrect geometry or timing, corrupt video, missing lineage, and incomplete worker outputs can invalidate a run.
+| Area | Current status |
+|---|---|
+| Coach-facing Studio workspace | Implemented locally. |
+| Saved run browsing and video evidence | Implemented locally, subject to available verified artifacts. |
+| Meta SAM 3.1, Muse Spark, Muse Wonder and Muse Voice Transcribe | Genuine local smoke-test responses recorded. |
+| Local coach review and temporary track corrections | Implemented locally. |
+| Fresh MP4 processing sequence | Offline mocked-Sandbox tests passed. |
+| Fresh live Modal GPU execution | Not yet verified end to end. |
+| Persistent player identity and roster management | Not yet implemented as a production service. |
+| Validated real-world speed and distance | Future work requiring calibration and reference validation. |
+| Durable cloud storage and multi-tenant deployment | Future production work. |
+| Parent-facing reports and connected player-development histories | Part of the product vision; not yet a deployed platform. |
 
-Live execution requires the exact approved checkpoint and source bundle, a compatible Modal SDK/image and access, a qualifying stationary panorama, trusted server-side authorization, and an explicit bounded spending approval. See the [architecture](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md) and [scalability strategy](docs/TOUCHLINE_SCALABILITY.md) for the implementation-to-production boundary. Other dated documents in `docs/` preserve engineering context; their historical plans and test counts are not current product claims.
+A detection or temporary track ID does not establish a player's identity. Pixel movement does not establish real-world distance or speed. Model-generated observations do not independently establish technical correctness or player improvement.
+
+We intend to validate these capabilities against real footage and appropriate reference data before presenting them as reliable measurements.
+
+---
+
+## Our vision
+
+We believe every young footballer should have access to structured, individual development support, not just those playing in professional academies.
+
+A coach should be able to understand what a player worked on, revisit the moments that matter, document feedback and see whether that feedback carries into future sessions.
+
+A player should be able to understand their own development. A parent should be able to see meaningful progress. A school or academy should be able to support that process consistently.
+
+**Touchline aims to connect all of them through video intelligence and continuous player development.**
+
+We're starting with a working prototype. The larger ambition is a connected player-development ecosystem for football.
+
+---
+
+**Built by Vikzar for the Meta Global AI Developer Hackathon.**
+
