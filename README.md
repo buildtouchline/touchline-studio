@@ -13,6 +13,21 @@ Our goal is to make structured, evidence-based football development more accessi
 
 ---
 
+## Explore the hackathon prototype
+
+The hackathon deliverable is **Touchline Studio**, the coach-facing prototype that demonstrates selected parts of the larger Touchline workflow.
+
+A useful way to explore the current build:
+
+1. **Open the Coach Studio:** browse saved local analysis runs and inspect the available football video, timeline observations and evidence.
+2. **Explore Meta model activity:** submit a selected football frame to SAM 3.1, Muse Spark or Muse Wonder, or submit an audio test file to Muse Voice Transcribe. Review the saved response and its input provenance.
+3. **Inspect coach review:** examine model proposals, review decisions and temporary track corrections. These are local review records, not verified player identities or a production roster.
+4. **Understand the processing boundary:** inspect how a fresh MP4 is prepared and validated, and how the Panorama/ResNet processing adapter is structured. The fresh live Modal GPU path is not yet verified end to end.
+
+For a guided walkthrough and presenter script, see [Product Demo and Meta Model Usage](docs/PRODUCT_DEMO_AND_META_MODELS.md). This is a demo guide, not a hosted demo-video link.
+
+---
+
 ## The problem we're solving
 
 Recording a training session is relatively easy. Turning hours of footage into useful feedback for individual players is not.
@@ -139,6 +154,47 @@ These foundations are intended to support the broader video intelligence workflo
 
 ---
 
+## Technical implementation
+
+The prototype is more than a set of standalone model calls. Its current engineering work connects a browser-based review interface, a local Python service, media preparation, model activity records and coach review.
+
+| Layer | What is implemented in this repository | Important boundary |
+|---|---|---|
+| **Frontend** | Browser-based Coach Studio with saved-run browsing, video playback, timeline/evidence presentation, Meta activity and local review controls. | A local coach workspace, not a deployed multi-club web application. |
+| **Backend** | Python 3.12 Studio server, local API routes, file-backed run records and job status. | Jobs and records are local; there is no durable distributed queue or production tenant service. |
+| **Video pipeline** | MP4 probing and bounded preparation, PyAV-based 24 FPS analysis-copy normalization, source-to-normalized frame correspondence, SHA-256 input/artifact checks and export validation. | Fresh-video preparation and import are tested with fixtures/mocked execution; this does not prove a fresh live GPU run. |
+| **Computer vision** | Panorama/ResNet worker contract, adapter and bounded Modal Sandbox dispatch boundary, plus validated export/import into a reopenable local run. | The worker/checkpoint deployment is not included as a verified live service; fresh Studio-to-live-Modal execution remains unverified. |
+| **Meta integrations** | Server-side requests for SAM 3.1, Muse Spark, Muse Wonder and Muse Voice Transcribe, with saved activity records, input provenance and coach-review handling. | Genuine smoke-test responses are not a reliability study. Voice transcription was tested with generated speech, not a validated coach recording. |
+| **Review and provenance** | Local coach decisions, separate temporary-track correction runs, source/frame hashes and explicit uncertainty boundaries. | Local review records are not tamper-proof, authenticated roster identity or production approval records. |
+
+### How the prototype's technical pieces connect
+
+```mermaid
+flowchart TB
+    C[Coach] --> UI[Browser-based Touchline Studio]
+    UI <--> API[Python local Studio API]
+    API <--> RUNS[File-backed runs, jobs and evidence]
+
+    VIDEO[Football MP4] --> VALIDATE[Probe, validate and hash source]
+    VALIDATE --> NORMALIZE[PyAV normalization and source-frame map]
+    NORMALIZE --> ADAPTER[Panorama / ResNet processing adapter]
+    ADAPTER -.->|Mocked Sandbox tests; fresh live run unverified| IMPORT[Export validation and local import]
+    IMPORT --> RUNS
+
+    FRAME[Selected source frame] --> META[Server-side Meta model requests]
+    AUDIO[Coach-audio test file] --> VOICE[Muse Voice Transcribe]
+    META --> ACTIVITY[Saved model activity and provenance]
+    VOICE --> ACTIVITY
+    ACTIVITY --> UI
+    RUNS --> UI
+    UI --> REVIEW[Coach review and local corrections]
+    REVIEW --> RUNS
+```
+
+The diagram deliberately separates the tested local workflow from the unverified live Modal execution boundary. The more detailed component and deployment-target diagram is in [System Architecture](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md).
+
+---
+
 ## Our longer-term technical direction
 
 Touchline is designed around a simple principle: **every meaningful development insight should be connected to the player, the session, the coaching objective and the underlying evidence.**
@@ -167,7 +223,7 @@ These are development targets, not claims that every metric is already available
 
 We would rather provide a smaller number of trustworthy insights than fill a dashboard with numbers that coaches cannot rely on.
 
-For more detail, see our [Video Analytics and Player Development Plan](docs/TOUCHLINE_VIDEO_ANALYTICS_PLAN.md) if present in the repository, alongside the technical architecture and scalability documents below.
+For the implemented processing boundary and current evidence, see the [System Architecture](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md) and [Scalability Strategy](docs/TOUCHLINE_SCALABILITY.md).
 
 ---
 
@@ -253,7 +309,9 @@ node --test src/touchline/web/*.test.cjs
 node --check src/touchline/web/app.js
 ```
 
-Additional processing tests and the broader offline verification suite are documented in the repository.
+The focused checks above cover the Meta activity/API path and browser-side tests; they are not a claim that the entire repository test suite passes. The latest focused verification recorded for this prototype was **24 Python tests and 46 JavaScript tests passing**. Fresh MP4 preparation/normalization and Panorama orchestration were also exercised with generated fixtures and a mocked Sandbox. A fresh live Studio-to-Modal GPU run has not been verified. The repository currently has no GitHub Actions workflow, so these results should be read as local test evidence rather than a hosted CI badge or continuous-integration result.
+
+For the implementation-specific test boundaries and remaining validation work, see [System Architecture](docs/TOUCHLINE_SYSTEM_ARCHITECTURE.md) and [Testing Notes](docs/TESTING.md).
 
 ---
 
