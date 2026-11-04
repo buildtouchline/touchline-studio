@@ -20,6 +20,28 @@ Coach workspace → local Studio API and job state → validated source and 24 f
 
 The full sequence above has passed an **offline mocked-Sandbox test with a fresh MP4 fixture**. A fresh browser-to-live-Modal-to-coach run has **not** been verified. The historical four-minute export and tracking results are review evidence, not production acceptance or a validated player-identity result.
 
+## Meta model demonstration
+
+Coach Studio now has a **Meta model activity** panel inside a real recording's Analysis workspace. It extracts one selected frame from the server's source video using its presentation timestamp; when the coach watches annotated output, the selected time is mapped back to source time through the supplied frame correspondence map. It sends a bounded request from the Python server to Meta Model API, then stores the request status, returned model ID, provider request ID, timestamps, latency, source-frame hash and safe output preview alongside that run. The browser receives no provider credential. A coach can confirm or reject a visible model observation; that local review does **not** confirm a roster identity or publish a parent report.
+
+```text
+Coach selects a real run and source-video moment
+  → Studio decodes that frame from original video PTS
+  → server-side Meta Model API request (when enabled)
+  → local per-run AI activity record and source-frame hash
+  → returned boxes/text shown beside the actual frame
+  → coach reviews the proposal; player identity remains unconfirmed
+```
+
+| Intended Meta model | Role | Current verification |
+| --- | --- | --- |
+| **SAM 3.1** (`sam-3.1`) | Selected-frame person segmentation; boxes and encoded masks | One real Model API response received in local Studio from a frame of authorized football footage. Bounding-box proposals are displayed over the source frame; masks are retained as technical output, not rendered or independently validated. |
+| **Muse Spark** (`muse-spark-1.3`) | Cautious selected-frame explanation | The account listed the model, but one real request failed without reviewable output. No successful integration claim. |
+| **Muse Wonder** (`muse-wonder-1.0`) | Evidence-grounded reasoning assistance | The account listed the model, but one real request failed without reviewable output. No successful integration claim. |
+| **Muse Voice Transcribe** (`muse-voice-transcribe-1.0`) | Coach-audio transcription | Listed by the account; the current Studio audio route is not verified against the current Meta file-transcription contract. No live transcription claim. |
+
+To enable **at most one to four** selected-frame calls in a trusted local server process, set `MODEL_API_KEY` and `TOUCHLINE_META_MAX_CALLS` (an integer from `1` to `4`) in that process's environment, then start Studio with an authorized run directory. The default allowance is **zero**. Open a run with a real `source_video.mp4`, seek to a frame and use **Analyse selected frame**. Each model can be requested only once per run; failed requests remain visible and count against the allowance. Credentials must be configured server-side and must never be pasted into the browser or committed. A fresh clone contains no recording, checkpoint or Model API key, so a judge cannot reproduce a live call from source alone. [Meta Model API](https://dev.meta.ai/docs/overview), [segmentation](https://dev.meta.ai/docs/sam/segmenting), and [voice transcription](https://dev.meta.ai/docs/speech-to-text) document the provider interfaces.
+
 ## Local setup
 
 Use Python **3.12 or newer**. From the repository root on macOS or Linux:
@@ -47,6 +69,7 @@ After installing the vision extra, run the focused fresh-MP4 mock, importer and 
 
 ```sh
 PYTHONPATH=src:tests python -B -m unittest test_panorama_backend_orchestration test_panorama_import test_video_normalize -q
+PYTHONPATH=src:tests python -B -m unittest test_meta_activity test_meta_studio_api -q
 node --test src/touchline/web/*.test.cjs
 node --check src/touchline/web/app.js
 python -B tools/run_offline_checks.py artifacts
@@ -62,6 +85,7 @@ The broader suite is `python -B tools/run_offline_checks.py`. Some tests need ad
 | Fresh MP4 preparation, frame map, distinct original/normalized hashes, export conversion and restart reopening | Tested with a small fixture and mocked Sandbox |
 | Panorama/ResNet worker and pinned checkpoint contract | Source present; checkpoint bytes and deployed image are not in this repository |
 | Live Modal GPU execution from Studio | Gated and **not verified** for a fresh recording |
+| Meta selected-frame AI activity | SAM 3.1 returned one real response in local Studio; other intended models are blocked or unverified as listed above |
 | Production authentication, roster authorization and durable cloud storage | Integration boundaries exist; a complete production service is not verified |
 | Temporary track review and separate correction child runs | Local file-backed workflow; roster identity requires trusted review; storage is not tamper-proof |
 | Tactical minimap, MOTChallenge export, jersey recognition, validated speed/distance, automatic retraining, coach voice commentary and advanced scoring | Planned or separately experimental; not presented as verified recording outputs |

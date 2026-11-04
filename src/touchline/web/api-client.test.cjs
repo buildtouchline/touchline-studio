@@ -127,6 +127,19 @@ test('original media time requires an exact frame-map row, never nominal FPS', (
   assert.equal(sourceTimeFromFrameMap([{output_frame_index:24,source_relative_time:[1,0]}],24),null);
 });
 
+test('selected annotated playback time maps to exact source PTS before Meta frame review', () => {
+  const {sourceTimeFromPlayback}=require('./api-client.js');
+  const rows=[
+    {output_frame_index:0,output_pts:0,output_time_base:[1,24],source_relative_time:[0,1]},
+    {output_frame_index:1,output_pts:1,output_time_base:[1,24],source_relative_time:[1,25]},
+    {output_frame_index:2,output_pts:2,output_time_base:[1,24],source_relative_time:[2,25]},
+  ];
+  assert.equal(sourceTimeFromPlayback(rows,1/24),1/25);
+  assert.equal(sourceTimeFromPlayback(rows,2/24),2/25);
+  assert.equal(sourceTimeFromPlayback(rows,1.8),null);
+  assert.equal(sourceTimeFromPlayback([{output_frame_index:0,source_relative_time:[0,1]}],0),null);
+});
+
 test('production accepts canonical evidence but never invents annotated media or correction persistence', async () => {
   const {reviewSummary}=require('./api-client.js');
   const hash='a'.repeat(64);

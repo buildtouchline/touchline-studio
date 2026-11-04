@@ -59,6 +59,25 @@
     const seconds = fraction[0] / fraction[1];
     return Number.isFinite(seconds) && seconds >= 0 ? seconds : null;
   }
+  function sourceTimeFromPlayback(rows, playbackTimeS) {
+    if(!Array.isArray(rows)||!Number.isFinite(playbackTimeS)||playbackTimeS<0)return null;
+    const outputTime=row=>{
+      const base=row?.output_time_base;
+      if(!Array.isArray(base)||base.length!==2||!base.every(Number.isInteger)||base[0]<=0||base[1]<=0||!Number.isInteger(row.output_pts))return null;
+      return row.output_pts*base[0]/base[1];
+    };
+    let bestIndex=-1,bestDelta=Infinity,bestTime=null;
+    for(let index=0;index<rows.length;index++){
+      const time=outputTime(rows[index]);if(time===null)continue;
+      const delta=Math.abs(time-playbackTimeS);
+      if(delta<bestDelta){bestIndex=index;bestDelta=delta;bestTime=time;}
+    }
+    if(bestIndex<0)return null;
+    const neighbours=[outputTime(rows[bestIndex-1]),outputTime(rows[bestIndex+1])].filter(time=>time!==null);
+    const spacing=Math.min(...neighbours.map(time=>Math.abs(time-bestTime)).filter(value=>value>0));
+    if(!Number.isFinite(spacing)||bestDelta>spacing*0.55+1e-6)return null;
+    return sourceTimeFromFrameMap(rows,rows[bestIndex].output_frame_index);
+  }
   function reviewSummary(value) {
     const manifest = value?.manifest || {};
     const observations = Array.isArray(value?.observations) ? value.observations : [];
@@ -220,7 +239,7 @@
     };
     return Object.freeze(api);
   }
-  const exported = Object.freeze({createClient, ApiError, status, job, canonicalObservation, sourceTimeFromFrameMap, reviewSummary});
+  const exported = Object.freeze({createClient, ApiError, status, job, canonicalObservation, sourceTimeFromFrameMap, sourceTimeFromPlayback, reviewSummary});
   root.TouchlineApi = exported;
   if (typeof module !== 'undefined' && module.exports) module.exports = exported;
 })(typeof window !== 'undefined' ? window : globalThis);

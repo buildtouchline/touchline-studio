@@ -8,7 +8,7 @@ const ui = Object.fromEntries([
   'jobBanner','jobTitle','jobMessage','jobProgress','btnJobOpen','btnJobRetry','btnJobDismiss',
   'btnOverviewSessions','overviewSessionCount','overviewVideoCount','overviewDraftStatus','overviewSessionList','libraryCount','libraryList',
   'libraryState','librarySearch','btnBackLibrary','frameReadout',
-  'sessionSelect','btnRetrySessions','calBadge','sessionTitle','sessionMeta','runStatus','sessionAlert',
+  'sessionSelect','btnRetrySessions','calBadge','sessionTitle','sessionMeta','runStatus','sessionAlert','metaModelSelect','btnMetaFrame','metaActivityReadiness','metaActivityList',
   'matchVideo','overlayCanvas','videoStatus','videoSubtitlesOverlay','subtitleText','videoSlider','fixtureVideoPlaceholder','btnOpenFixtureVideo','transportDeck',
   'timelineMarkers','timeDisplay','btnPlayPause','btnStepBack','btnStepFwd','chkBoxes','chkTags',
   'chkTrails','chkSubsOverlay','chkLoop','speedSelect','headerLangSelect','exportDropdown',
@@ -28,7 +28,7 @@ const ctx = ui.overlayCanvas.getContext('2d');
 const state = { id:null, data:null, runs:[], listError:null, frameTimes:[], frames:new Map(), selected:null, loadToken:0, listToken:0,
   recorder:null, stream:null, recording:null, recorded:null, audioUrl:null, clock:null, uploadingAudio:false, disposing:false,
   saving:false, editing:null, lastRenderedFrame:null, geometryWarning:false, calibrationVerified:false, modalReturnFocus:null,
-  localMarkers:[],timelineEntries:[],developmentDraft:null,view:'library',demo:window.__touchlineFixture===true,fixtureVideoOpen:false,mediaKind:'source',job:null,focusPlayerId:null,pollToken:0,listLoading:false,teams:null,playersByTeam:new Map(),rosterError:null,rosterLoading:false };
+  localMarkers:[],timelineEntries:[],developmentDraft:null,view:'library',demo:window.__touchlineFixture===true,fixtureVideoOpen:false,mediaKind:'source',job:null,focusPlayerId:null,pollToken:0,listLoading:false,teams:null,playersByTeam:new Map(),rosterError:null,rosterLoading:false,metaActivities:[],metaPollToken:0,metaConfigured:false,metaEnabled:false,metaRemaining:0,metaError:null };
 let api;
 try { api=TouchlineApi.createClient({...(window.__touchlineApiConfig||{}),mode:state.demo?'demo':window.__touchlineApiConfig?.mode||'local',syntheticFixture:state.demo}); }
 catch(error) {
@@ -94,6 +94,98 @@ function independentlyVerified(cal,data) {
 }
 function reviewedPlayer(p){return TouchlineDevelopment.confirmedPlayer([p],p?.confirmed_player_id);}
 function runUrl(id) { return `/api/run/${encodeURIComponent(id)}`; }
+function samBoxes(text){
+  const boxes=[];const pattern=/<\|box;x1=(\d+);y1=(\d+);x2=(\d+);y2=(\d+);w=(\d+);h=(\d+)/g;
+  for(const match of String(text||'').matchAll(pattern)){
+    const [x1,y1,x2,y2,width,height]=match.slice(1).map(Number);
+    if(width>0&&height>0&&x1>=0&&y1>=0&&x2>x1&&y2>y1&&x2<=width&&y2<=height)boxes.push({x1,y1,x2,y2,width,height});
+    if(boxes.length>=100)break;
+  }
+  return boxes;
+}
+function renderMetaActivity(){
+  const realRun=api.mode==='local'&&!state.demo&&state.id&&state.data?.video_url;
+  const sourceAlignmentAvailable=state.mediaKind==='source'||Array.isArray(state.data?.frame_map)&&state.data.frame_map.length>1;
+  const modelUsed=state.metaActivities.some(item=>item.model_kind===ui.metaModelSelect.value);
+  const ready=realRun&&sourceAlignmentAvailable&&state.metaConfigured&&state.metaEnabled&&state.metaRemaining>0&&!modelUsed;
+  ui.btnMetaFrame.disabled=!ready;
+  ui.metaActivityReadiness.textContent=state.metaError||(!realRun?'Open a real recording; synthetic fixtures cannot call Meta.':
+    !sourceAlignmentAvailable?'Original frame time is unavailable; switch to source video or provide a verified frame map.':
+    !state.metaConfigured?'Server-side Meta credential unavailable.':
+    !state.metaEnabled||state.metaRemaining<=0?'Server-side Meta call allowance is closed.':
+    modelUsed?'This model was already requested for this run.':'Ready for one bounded selected-frame request.');
+  ui.metaActivityList.replaceChildren();
+  for(const activity of state.metaActivities){
+    const card=document.createElement('article');card.className='meta-activity-card';
+    const title=document.createElement('h3');title.textContent=`${activity.model||'Meta model'} · ${String(activity.status||'unknown').replaceAll('_',' ')}`;
+    const details=document.createElement('p');details.textContent=`${activity.provider||'Meta Model API'} · ${activity.input_type||'source frame'} · ${Number.isFinite(activity.frame_time_s)?formatTime(activity.frame_time_s):formatTime(activity.requested_time_s)} · ${activity.latency_ms==null?'pending':`${activity.latency_ms} ms`}`;
+    const ids=document.createElement('small');ids.textContent=`Session ${activity.run_id||'—'} · Request ${activity.request_id||'pending'} · ${activity.runtime||'server'} · ${activity.submitted_at||'—'} → ${activity.responded_at||'pending'}${activity.response_model?` · Returned model ${activity.response_model}`:''}`;
+    card.append(title,details,ids);
+    if(activity.output_preview){
+      const boxes=activity.model==='sam-3.1'?samBoxes(activity.output_preview):[];
+      if(activity.frame_sha256){
+        const frame=document.createElement('div');frame.className='meta-frame-view';
+        const image=document.createElement('img');image.alt='Source video frame supplied to Meta; model geometry is overlaid when available';
+        image.src=`${runUrl(activity.run_id)}/meta-activity/${encodeURIComponent(activity.activity_id)}/frame.jpg`;
+        frame.append(image);
+        for(const [index,box] of boxes.entries()){
+          const marker=document.createElement('span');marker.className='meta-frame-box';marker.style.left=`${100*box.x1/box.width}%`;marker.style.top=`${100*box.y1/box.height}%`;marker.style.width=`${100*(box.x2-box.x1)/box.width}%`;marker.style.height=`${100*(box.y2-box.y1)/box.height}%`;marker.title=`SAM proposal ${index+1}; unconfirmed identity`;frame.append(marker);
+        }
+        card.append(frame);
+      }
+      if(activity.model==='sam-3.1'){
+        const summary=document.createElement('p');summary.textContent=`${boxes.length} visible person-box proposals from the returned segmentation text. Mask payloads are retained in the technical response; these are not confirmed players.`;card.append(summary);
+        const raw=document.createElement('details');const label=document.createElement('summary');label.textContent='Technical Meta segmentation response';
+        const output=document.createElement('pre');output.className='meta-activity-output';output.textContent=activity.output_preview;raw.append(label,output);card.append(raw);
+      }else{const output=document.createElement('p');output.className='meta-activity-text';output.textContent=activity.output_preview;card.append(output);}
+    }
+    if(activity.error){const error=document.createElement('p');error.className='meta-activity-error';error.textContent=`${activity.error} ${activity.error_code||''}${activity.provider_http_status?` · HTTP ${activity.provider_http_status}`:''}`;card.append(error);}
+    if(activity.status==='response_received'){
+      const review=document.createElement('div');review.className='meta-activity-review';
+      if(activity.review){review.textContent=`Coach review: ${activity.review.decision.replaceAll('_',' ')} · ${activity.review.reviewer==='local_unauthenticated_coach'?'local Studio review':activity.review.reviewer}`;}
+      else for(const [label,decision] of [['Confirm visible observation','confirmed_observation'],['Reject observation','rejected_observation']]){
+        const button=document.createElement('button');button.type='button';button.className='btn-ctrl';button.textContent=label;
+        button.addEventListener('click',()=>reviewMetaActivity(activity.activity_id,decision));review.append(button);
+      }
+      card.append(review);
+    }
+    ui.metaActivityList.append(card);
+  }
+  if(!state.metaActivities.length){const empty=document.createElement('p');empty.className='muted';empty.textContent='No real Meta model request has been made for this session.';ui.metaActivityList.append(empty);}
+}
+async function refreshMetaActivity(){
+  const runId=state.id,token=++state.metaPollToken;
+  if(api.mode!=='local'||state.demo||!runId||!state.data){state.metaActivities=[];state.metaConfigured=false;state.metaEnabled=false;state.metaRemaining=0;renderMetaActivity();return;}
+  try{
+    const response=await fetch(`${runUrl(runId)}/meta-activity`,{headers:{Accept:'application/json'}});
+    const payload=await jsonResponse(response);
+    if(token!==state.metaPollToken||runId!==state.id)return;
+    state.metaActivities=Array.isArray(payload.activities)?payload.activities:[];
+    state.metaConfigured=payload.configured===true;state.metaEnabled=payload.enabled===true;
+    state.metaRemaining=Number.isInteger(payload.remaining_calls)?payload.remaining_calls:0;
+  }catch{if(token!==state.metaPollToken)return;state.metaConfigured=false;state.metaEnabled=false;}
+  renderMetaActivity();
+  if(state.metaActivities.some(item=>['submitted','processing'].includes(item.status)))setTimeout(()=>{if(token===state.metaPollToken)refreshMetaActivity();},1200);
+}
+async function reviewMetaActivity(activityId,decision){
+  if(!state.id||api.mode!=='local'||state.demo)return;
+  try{await jsonResponse(await fetch(`${runUrl(state.id)}/meta-activity/${encodeURIComponent(activityId)}/review`,{
+    method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({decision})}));await refreshMetaActivity();}
+  catch(error){toast(`Review was not saved: ${error.message}`,'error');}
+}
+ui.btnMetaFrame.addEventListener('click',async()=>{
+  if(!state.id||!state.data?.video_url||api.mode!=='local'||state.demo)return;
+  const sourceTime=state.mediaKind==='annotated'?TouchlineApi.sourceTimeFromPlayback(state.data.frame_map,ui.matchVideo.currentTime||0):ui.matchVideo.currentTime||0;
+  if(!Number.isFinite(sourceTime)){state.metaError='Original source time is unavailable for this annotated frame.';renderMetaActivity();return;}
+  ui.btnMetaFrame.disabled=true;state.metaError='Submitting selected source frame to Meta…';renderMetaActivity();
+  try{
+    const response=await fetch(`${runUrl(state.id)}/meta-frame`,{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:ui.metaModelSelect.value,timestamp_s:sourceTime})});
+    await jsonResponse(response);state.metaError=null;await refreshMetaActivity();
+  }catch(error){state.metaError=`Request not started: ${error.message}`;}
+  finally{renderMetaActivity();}
+});
+ui.metaModelSelect.addEventListener('change',()=>{state.metaError=null;renderMetaActivity();});
 function openRunOrJob(run){
   const status=String(run.status||'').toLowerCase();
   if(['queued','processing','failed','cancelled','unavailable'].includes(status)){
@@ -290,6 +382,7 @@ function libraryLoading() {
 }
 function clearSession(message='Select a session to review.') {
   state.data=null; state.selected=null; state.calibrationVerified=false; state.frames.clear(); state.frameTimes=[]; state.lastRenderedFrame=null;state.localMarkers=[];state.timelineEntries=[];state.fixtureVideoOpen=false;state.mediaKind='source';
+  state.metaActivities=[];state.metaConfigured=false;state.metaEnabled=false;state.metaRemaining=0;state.metaError=null;++state.metaPollToken;renderMetaActivity();
   ui.matchVideo.pause(); ui.matchVideo.removeAttribute('src'); ui.matchVideo.load();
   setFixturePresentation(false);
   ui.overlayCanvas.width=1; ui.overlayCanvas.height=1;
@@ -436,6 +529,7 @@ async function loadSession(id) {
       data.observations_next_offset=offset;
     }
     state.data=data;
+    refreshMetaActivity();
     state.localMarkers=readLocalMarkers(id);
     const observations=safeArray(data.observations);
     state.mediaKind=!state.demo&&TouchlineApi.reviewSummary(data).annotatedVideoAvailable?'annotated':'source';

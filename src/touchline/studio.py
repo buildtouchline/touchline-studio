@@ -17,6 +17,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import hmac
+import hashlib
 import json
 import math
 import os
@@ -40,7 +41,6 @@ from .audio import (
     load_meta_key,
     load_sarvam_key,
     mask_api_key,
-    save_meta_key,
     save_sarvam_key,
     transcribe_coach_audio,
     transcribe_with_sarvam,
@@ -55,6 +55,7 @@ from .diagnostics import diagnostic_session, diagnostic_span, record_failure, cu
 from functools import wraps
 from .video.sampling import FixedRateSampler
 from .viewer import render_inspection_dashboard
+from .meta_activity import MODELS as META_MODELS, execute_activity, list_activities, new_activity, save_activity, source_frame
 
 _LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1"})
 _MAX_UPLOAD_BYTES = 1024 * 1024 * 1024  # 1 GiB bounded streaming upload
@@ -487,6 +488,7 @@ def run_studio_server(
         from .adapters.panorama_worker import PanoramaWorkerAdapter
         worker_adapter = PanoramaWorkerAdapter(runs_root)
     active_job_ids = set()
+    meta_activity_lock = threading.RLock()
     # Legacy synthetic calibration is never generated on Studio startup.
 
     class StudioHandler(BaseHTTPRequestHandler):
@@ -607,8 +609,8 @@ def run_studio_server(
                     return
 
             if path == "/api/meta-key":
-                key = load_meta_key(runs_root)
-                self._json(200, {"configured": bool(key), "masked": mask_api_key(key)})
+                self._json(200, {"configured": bool(os.environ.get("MODEL_API_KEY") or os.environ.get("META_API_KEY")),
+                                 "server_managed": True})
                 return
 
             if path == "/api/sarvam-key":
@@ -626,6 +628,46 @@ def run_studio_server(
                             return False
                     sessions = [session for session in sessions if visible(session)]
                 self._json(200, sessions)
+                return
+
+            meta_frame_image_match = re.fullmatch(r"/api/runs?/([^/]+)/meta-activity/(meta-[0-9a-f]{32})/frame\.jpg", path)
+            if meta_frame_image_match:
+                rid, activity_id = meta_frame_image_match.groups()
+                rdir = _find_run_dir(runs_root, rid)
+                record = next((row for row in list_activities(rdir) if row["activity_id"] == activity_id), None) if rdir else None
+                if record is None or not record.get("frame_sha256") or not (rdir / "source_video.mp4").is_file():
+                    self._json(404, {})
+                    return
+                try:
+                    jpeg, _ = source_frame(rdir / "source_video.mp4", record["requested_time_s"])
+                    if hashlib.sha256(jpeg).hexdigest() != record["frame_sha256"]:
+                        raise ValueError("Frame lineage changed")
+                except (OSError, ValueError, RuntimeError):
+                    self._json(409, {})
+                    return
+                self.send_response(200)
+                self.send_header("Content-Type", "image/jpeg")
+                self.send_header("Content-Length", str(len(jpeg)))
+                self.send_header("Cache-Control", "private, no-store")
+                self.end_headers()
+                if not is_head:
+                    self.wfile.write(jpeg)
+                return
+
+            meta_list_match = re.fullmatch(r"/api/runs?/([^/]+)/meta-activity", path)
+            if meta_list_match:
+                rid = meta_list_match.group(1)
+                rdir = _find_run_dir(runs_root, rid)
+                if rdir is None:
+                    self._json(404, {})
+                    return
+                configured_limit = os.environ.get("TOUCHLINE_META_MAX_CALLS", "0")
+                limit = int(configured_limit) if configured_limit.isdigit() and 0 < int(configured_limit) <= 4 else 0
+                used = sum(len(list_activities(folder)) for folder in runs_root.iterdir()
+                           if folder.is_dir() and not folder.is_symlink() and (folder / "manifest.json").is_file())
+                self._json(200, {"run_id": rid, "activities": list_activities(rdir),
+                                 "configured": bool(os.environ.get("MODEL_API_KEY") or os.environ.get("META_API_KEY")),
+                                 "enabled": limit > 0, "remaining_calls": max(0, limit - used)})
                 return
 
             if path == "/api/analyze/readiness":
@@ -870,16 +912,6 @@ def run_studio_server(
                 if not is_head:
                     shutil.copyfileobj(stream, self.wfile)
 
-        def _handle_meta_key(self):
-            try:
-                length = int(self.headers.get("Content-Length", "0"))
-                data = json.loads(self.rfile.read(length).decode("utf-8") or "{}")
-                save_meta_key(runs_root, data.get("api_key", ""))
-                key = load_meta_key(runs_root)
-                self._json(200, {"configured": True, "masked": mask_api_key(key)})
-            except Exception as exc:
-                self._json(400, {"error": str(exc)})
-
         def _handle_sarvam_key(self):
             try:
                 length = int(self.headers.get("Content-Length", "0"))
@@ -896,6 +928,72 @@ def run_studio_server(
             path = parsed.path
 
             if not self._check_auth():
+                return
+            meta_frame_match = re.fullmatch(r"/api/runs?/([^/]+)/meta-frame", path)
+            meta_review_match = re.fullmatch(r"/api/runs?/([^/]+)/meta-activity/(meta-[0-9a-f]{32})/review", path)
+            if meta_frame_match or meta_review_match:
+                rid = (meta_frame_match or meta_review_match).group(1)
+                if not self._check_run_access(rid, "write"):
+                    return
+                rdir = _find_run_dir(runs_root, rid)
+                if rdir is None:
+                    self._json(404, {})
+                    return
+                length_text = self.headers.get("Content-Length", "")
+                if not length_text.isdigit() or not 0 < int(length_text) <= 2048 or self.headers.get("Content-Type", "").split(";", 1)[0] != "application/json":
+                    self._json(400, {})
+                    return
+                try:
+                    body = json.loads(self.rfile.read(int(length_text)))
+                except (ValueError, UnicodeError):
+                    self._json(400, {})
+                    return
+                if not isinstance(body, dict):
+                    self._json(400, {})
+                    return
+                if meta_review_match:
+                    activity_id = meta_review_match.group(2)
+                    decision = body.get("decision")
+                    if decision not in ("confirmed_observation", "rejected_observation"):
+                        self._json(400, {})
+                        return
+                    with meta_activity_lock:
+                        record = next((row for row in list_activities(rdir) if row["activity_id"] == activity_id), None)
+                        if record is None or record["status"] != "response_received" or record.get("review") is not None:
+                            self._json(409, {})
+                            return
+                        record["review"] = {"decision": decision, "reviewed_at": datetime.now(timezone.utc).isoformat(),
+                                            "reviewer": reviewer_identity or "local_unauthenticated_coach"}
+                        save_activity(rdir, record)
+                    self._json(200, record)
+                    return
+                model_kind = body.get("model")
+                selected_time = body.get("timestamp_s")
+                if model_kind not in META_MODELS or type(selected_time) not in (int, float) or not math.isfinite(selected_time) or selected_time < 0:
+                    self._json(400, {})
+                    return
+                if not (rdir / "source_video.mp4").is_file():
+                    self._json(409, {})
+                    return
+                key = os.environ.get("MODEL_API_KEY") or os.environ.get("META_API_KEY")
+                configured_limit = os.environ.get("TOUCHLINE_META_MAX_CALLS", "0")
+                if not key or not configured_limit.isdigit() or not 0 < int(configured_limit) <= 4:
+                    self._json(503, {})
+                    return
+                with meta_activity_lock:
+                    used = sum(len(list_activities(folder)) for folder in runs_root.iterdir()
+                               if folder.is_dir() and not folder.is_symlink() and (folder / "manifest.json").is_file())
+                    if used >= int(configured_limit):
+                        self._json(429, {})
+                        return
+                    if any(row.get("model_kind") == model_kind for row in list_activities(rdir)):
+                        self._json(409, {})
+                        return
+                    record = new_activity(rid, model_kind, selected_time)
+                    save_activity(rdir, record)
+                threading.Thread(target=execute_activity, args=(rdir, record, key), daemon=True,
+                                 name="meta-selected-frame").start()
+                self._json(202, {"activity_id": record["activity_id"], "status": "submitted", "run_id": rid})
                 return
             if path in ("/api/runs", "/api/run") and not self._check_run_access("*", "create"):
                 return
@@ -917,7 +1015,9 @@ def run_studio_server(
                     return
 
             if path == "/api/meta-key":
-                self._handle_meta_key()
+                # Provider credentials must be configured by the trusted server operator.
+                # _json closes a rejected POST before unread bytes can become a new request.
+                self._json(410, {})
                 return
 
             if path == "/api/sarvam-key":
