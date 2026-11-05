@@ -152,6 +152,54 @@ These foundations are intended to support the broader video intelligence workflo
 
 ---
 
+## Computer Vision Results and Development
+
+Over one week of iterative development, we made substantial improvements to Touchline's football player detection and provisional tracking pipeline.
+
+### Dataset and development
+
+We worked with 19 football videos across three stages:
+
+| Development stage | Footage |
+|---|---|
+| Initial dataset | 12 videos, approximately 45 minutes each |
+| Expanded dataset | 6 additional videos, approximately 12–15 minutes each |
+| Final iteration | 1 additional 4-minute video |
+
+All 19 videos were used during model development and training, including the footage featured in our final demonstration. Together, they represent approximately **10 hours and 16–34 minutes of football footage**.
+
+### Performance comparison
+
+We compared the earlier and improved configurations on the same **1,440 sampled frames**.
+
+| Metric | Earlier configuration | Improved configuration |
+|---|---:|---:|
+| Detection AP50 | 19.6% | **84.3%** |
+| Player detection recall | 22.9% | **93.3%** |
+| Provisional identity F1 | 7.0% | **31.3%** |
+
+![Touchline computer vision performance comparison](docs/assets/touchline-detection-improvement.png)
+
+*Before-and-after performance comparison across the same 1,440 sampled frames.*
+
+### Understanding the results
+
+Our development process involved evaluating different camera perspectives to understand which viewpoint provided the most useful footage for player detection and tracking. The panoramic configuration emerged as the strongest option in our evaluated comparison and was consequently selected for the hackathon demonstration.
+
+- **Detection AP50 (84.3%):** Across the evaluated camera configurations, the model achieved an overall Detection AP50 of 84.3%, measuring its ability to identify and localise players at an IoU threshold of 0.50.
+- **Panoramic player detection recall (93.3%):** The selected panoramic configuration achieved 93.3% player detection recall, meaning that the model successfully detected a high proportion of the annotated player instances in the evaluated footage. This helped inform our decision to use the panoramic viewpoint in the demonstration.
+- **Provisional identity F1 (31.3%):** Player identity association remained our biggest challenge. The 31.3% Identity F1 highlighted the difficulty of consistently maintaining player identities across frames, even when player detection had improved substantially. This became an important area for further development.
+
+These results represent development-stage evaluations on footage used during model development and training. They demonstrate progress on the evaluated footage, rather than independently validated performance on unseen matches.
+
+### What we learned
+
+Player detection improved considerably faster than identity association. Finding players in individual frames is only one part of the problem; consistently recognising and tracking the same player across multiple frames remains substantially more challenging.
+
+Our next focus is improving identity association, reducing track fragmentation and validating the pipeline on football footage that has not been used during model development.
+
+---
+
 ## Technical implementation
 
 The prototype is more than a set of standalone model calls. Its current engineering work connects a browser-based review interface, a local Python service, media preparation, model activity records and coach review.
@@ -324,8 +372,8 @@ We believe it is important to be clear about what the prototype demonstrates and
 | Meta SAM 3.1, Muse Spark, Muse Wonder and Muse Voice Transcribe | Genuine local smoke-test responses recorded. |
 | Local coach review and temporary track corrections | Implemented locally. |
 | Fresh MP4 processing sequence | Offline mocked-Sandbox tests passed. |
-| Fresh live Modal GPU execution | Verified end to end. |
-| Persistent player identity and roster management | Implemented as a production service. |
+| Fresh live Modal GPU execution | Not verified end to end; fresh-video processing has passed offline mocked-Sandbox tests only. |
+| Persistent player identity and roster management | Not implemented as a production service; local coach review and temporary track corrections remain provisional. |
 | Validated real-world speed and distance | Future work requiring calibration and reference validation. |
 | Durable cloud storage and multi-tenant deployment | Future production work. |
 | Parent-facing reports and connected player-development histories | Part of the product vision; not yet a deployed platform. |
